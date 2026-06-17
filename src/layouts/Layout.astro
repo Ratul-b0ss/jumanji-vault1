@@ -25,6 +25,15 @@ const { title = defaultTitle } = Astro.props;
     <title>{title}</title>
   </head>
   <body>
+    <!-- ═══════ INTRO SPLASH SCREEN ═══════ -->
+    <div id="introScreen" class="intro-screen">
+      <div class="intro-content" id="introContent">
+        <div class="intro-brand text-gradient-gold">JUMANJI<br />VAULT</div>
+        <p class="intro-sub">Bangladesh #1 Minifigure Store</p>
+        <button id="introBegin" class="intro-begin">Begin</button>
+      </div>
+    </div>
+
     <!-- Floating logo -->
     <div class="floating-logo absolute top-0 left-0 right-0 z-10" style="padding: var(--space-lg);">
       <a href="/" class="inline-flex items-center gap-1.5 no-underline">
@@ -400,6 +409,19 @@ const { title = defaultTitle } = Astro.props;
         this.reset();
         showToast('Order placed! Ref: ' + order.id);
       });
+
+      // ─── Intro Splash ───
+      var introScreen = document.getElementById('introScreen');
+      var introBegin = document.getElementById('introBegin');
+      if (introBegin) {
+        introBegin.addEventListener('click', function() {
+          introScreen.classList.add('hidden-intro');
+          introScreen.addEventListener('transitionend', function fn() {
+            this.style.display = 'none';
+            this.removeEventListener('transitionend', fn);
+          });
+        });
+      }
 
       // ─── Init ───
       applySettings();
