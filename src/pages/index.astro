@@ -5,7 +5,7 @@ import Layout from '../layouts/Layout.astro';
 <Layout title="JUMANJI VAULT - Premium LEGO Minifigures">
 
   <!-- HERO -->
-  <section class="section-hero relative">
+  <section class="section-hero relative section-fade-in">
     <div class="page-container relative z-10 text-center">
       <!-- Headline -->
       <h1 class="typo-display-xl mx-auto mb-3 md:mb-5 text-gradient-brand" style="max-width: 800px; font-size: clamp(38px, 6vw, 72px); line-height: 1.05;">
@@ -40,7 +40,7 @@ import Layout from '../layouts/Layout.astro';
 
 
   <!-- PRODUCTS -->
-  <section id="products" class="section-products">
+  <section id="products" class="section-products section-fade-in">
     <div class="page-container">
       <!-- Category filter tabs -->
       <div id="categoryFilters" class="flex flex-wrap items-center gap-2 mb-6"></div>
@@ -109,17 +109,17 @@ import Layout from '../layouts/Layout.astro';
       return;
     }
 
-    grid.innerHTML = filtered.map(function(p) {
-      return '<article class="card-product group cursor-pointer">' +
-        '<div class="relative aspect-[3/4] overflow-hidden rounded-lg mb-2" style="background-color: var(--bg);">' +
-        '<img src="' + p.image + '" alt="' + p.name + '" class="w-full h-full object-contain p-3 transition-transform duration-300 group-hover:scale-110" loading="lazy" />' +
-        (p.tag ? '<span class="badge-tag absolute top-2 left-2 z-10">' + p.tag + '</span>' : '') +
-        '<button type="button" class="absolute bottom-2 right-2 z-10 flex items-center justify-center" style="width:28px;height:28px;border-radius:9999px;background:var(--white);color:var(--bg);border:none;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,0.4);" data-name="' + esc(p.name) + '" data-price="' + esc(p.price) + '" data-image="' + esc(p.image) + '">' +
+    grid.innerHTML = filtered.map(function(p, i) {
+      return '<article class="card-product product-card-entrance" style="animation-delay:' + (i * 0.06) + 's">' +
+        '<div class="card-img-wrap">' +
+        '<img src="' + p.image + '" alt="' + p.name + '" loading="lazy" />' +
+        (p.tag ? '<span class="card-tag">' + p.tag + '</span>' : '') +
+        '<button type="button" class="card-add-btn" data-name="' + esc(p.name) + '" data-price="' + esc(p.price) + '" data-image="' + esc(p.image) + '">' +
         '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>' +
         '</button></div>' +
-        '<div class="flex items-center justify-between gap-1">' +
-        '<h3 class="typo-body-sm" style="color:var(--white);">' + p.name + '</h3>' +
-        '<span class="typo-body-sm whitespace-nowrap text-gold">' + p.price + '</span></div></article>';
+        '<div class="card-info">' +
+        '<span class="card-name">' + p.name + '</span>' +
+        '<span class="card-price">' + p.price + '</span></div></article>';
     }).join('');
 
     // Wire up + buttons

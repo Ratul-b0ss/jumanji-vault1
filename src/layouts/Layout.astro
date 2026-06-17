@@ -59,7 +59,7 @@ const { title = defaultTitle } = Astro.props;
     <div id="cartDrawer" class="cart-drawer translate-x-full">
       <div class="flex flex-col h-full">
         <!-- Drawer header -->
-        <div class="flex items-center justify-between px-5 py-4" style="border-bottom: 1px solid var(--border);">
+        <div class="flex items-center justify-between px-5 py-4" style="border-bottom: 1px solid rgba(255,215,0,0.2);">
           <h2 class="typo-body-md-strong" style="color: var(--white);">Cart</h2>
           <button id="closeDrawer" class="modal-close" type="button">&times;</button>
         </div>
@@ -81,7 +81,7 @@ const { title = defaultTitle } = Astro.props;
     <!-- ═══════ CHECKOUT MODAL ═══════ -->
     <div id="checkoutModal" class="modal-overlay hidden">
       <div class="modal-content">
-        <div class="modal-header">
+        <div class="modal-header" style="border-bottom: 1px solid rgba(255,215,0,0.15); padding-bottom: var(--space-md);">
           <h2 class="typo-body-md-strong" style="color: var(--white);">Checkout</h2>
           <button id="closeCheckout" class="modal-close" type="button">&times;</button>
         </div>
