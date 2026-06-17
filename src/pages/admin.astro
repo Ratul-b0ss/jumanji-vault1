@@ -301,14 +301,14 @@ import '../styles/global.css';
           empty.style.display = 'none';
           tbody.innerHTML = orders.map(function(order, idx) {
             return '<tr>' +
-              '<td style="font-family: monospace; font-size: 12px;">' + order.id + '</td>' +
-              '<td>' + (order.customer ? order.customer.name : 'N/A') + '</td>' +
-              '<td>' + (order.customer ? order.customer.phone : 'N/A') + '</td>' +
-              '<td>' + (order.items ? order.items.length + ' items' : 'N/A') + '</td>' +
-              '<td style="color: var(--gold);">Tk ' + order.total + '</td>' +
-              '<td>' + order.payment + (order.paymentRef ? ' (' + order.paymentRef + ')' : '') + '</td>' +
-              '<td style="font-size: 12px;">' + new Date(order.date).toLocaleDateString() + '</td>' +
-              '<td><select class="status-select" data-idx="' + idx + '" style="background:var(--bg);color:var(--white);border:1px solid var(--border);border-radius:6px;padding:4px 8px;font-size:12px;">' +
+              '<td data-label="Order ID" style="font-family: monospace; font-size: 12px;">' + order.id + '</td>' +
+              '<td data-label="Customer">' + (order.customer ? order.customer.name : 'N/A') + '</td>' +
+              '<td data-label="Phone">' + (order.customer ? order.customer.phone : 'N/A') + '</td>' +
+              '<td data-label="Items">' + (order.items ? order.items.length + ' items' : 'N/A') + '</td>' +
+              '<td data-label="Total" style="color: var(--gold);">Tk ' + order.total + '</td>' +
+              '<td data-label="Payment">' + order.payment + (order.paymentRef ? ' (' + order.paymentRef + ')' : '') + '</td>' +
+              '<td data-label="Date" style="font-size: 12px;">' + new Date(order.date).toLocaleDateString() + '</td>' +
+              '<td data-label="Status"><select class="status-select" data-idx="' + idx + '" style="background:var(--bg);color:var(--white);border:1px solid var(--border);border-radius:6px;padding:4px 8px;font-size:12px;">' +
                 ['pending','confirmed','shipped','delivered','cancelled'].map(function(s) { return '<option value="' + s + '"' + (order.status === s ? ' selected' : '') + '>' + s + '</option>'; }).join('') +
               '</select></td></tr>';
           }).join('');
@@ -374,12 +374,12 @@ import '../styles/global.css';
           tbody.innerHTML = products.map(function(p, idx) {
             var imgSrc = p.image && p.image.startsWith('data:') ? p.image : (p.image || '/images/product-1.svg');
             return '<tr>' +
-              '<td><img src="' + imgSrc + '" style="width:40px;height:40px;border-radius:6px;object-fit:contain;background:var(--bg);border:1px solid var(--border);" /></td>' +
-              '<td>' + p.name + '</td>' +
-              '<td style="color:var(--gold);">' + p.price + '</td>' +
-              '<td>' + (p.tag || '-') + '</td>' +
-              '<td>' + (p.category || '-') + '</td>' +
-              '<td><button class="edit-prod" data-idx="' + idx + '" style="background:none;border:1px solid var(--border);color:var(--white);border-radius:6px;padding:4px 12px;font-size:12px;cursor:pointer;margin-right:4px;">Edit</button>' +
+              '<td data-label="Image"><img src="' + imgSrc + '" style="width:40px;height:40px;border-radius:6px;object-fit:contain;background:var(--bg);border:1px solid var(--border);" /></td>' +
+              '<td data-label="Name">' + p.name + '</td>' +
+              '<td data-label="Price" style="color:var(--gold);">' + p.price + '</td>' +
+              '<td data-label="Tag">' + (p.tag || '-') + '</td>' +
+              '<td data-label="Category">' + (p.category || '-') + '</td>' +
+              '<td data-label="Actions"><button class="edit-prod" data-idx="' + idx + '" style="background:none;border:1px solid var(--border);color:var(--white);border-radius:6px;padding:4px 12px;font-size:12px;cursor:pointer;margin-right:4px;">Edit</button>' +
               '<button class="delete-prod" data-idx="' + idx + '" style="background:none;border:1px solid var(--red);color:var(--red);border-radius:6px;padding:4px 12px;font-size:12px;cursor:pointer;">Delete</button></td></tr>';
           }).join('');
 
