@@ -248,12 +248,12 @@ import '../styles/global.css';
         function setData(key, val) { localStorage.setItem(key, JSON.stringify(val)); }
 
         const defaultProducts = [
-          { name: 'Iron Man Mk 85', price: 'Tk 450', image: '/images/product-1.svg', tag: 'Marvel', category: 'Marvel' },
-          { name: 'Batman Dark Knight', price: 'Tk 380', image: '/images/product-2.svg', tag: 'DC', category: 'DC' },
-          { name: 'Goku Ultra Instinct', price: 'Tk 520', image: '/images/product-3.svg', tag: 'Anime', category: 'Dragon Ball Z' },
-          { name: 'Eleven', price: 'Tk 420', image: '/images/product-4.svg', tag: 'Stranger Things', category: 'Stranger Things' },
-          { name: 'Spider-Man Miles', price: 'Tk 480', image: '/images/product-5.svg', tag: 'Marvel', category: 'Marvel' },
-          { name: 'Luffy Gear 5', price: 'Tk 550', image: '/images/product-6.svg', tag: 'Anime', category: 'One Piece' },
+          { name: 'Iron Man Mk 85', price: 'Tk 450', image: 'https://placehold.co/400x533/141414/FFD700?text=Iron+Man+Mk+85&font=inter', tag: 'Marvel', category: 'Marvel' },
+          { name: 'Batman Dark Knight', price: 'Tk 380', image: 'https://placehold.co/400x533/141414/FFD700?text=Batman+Dark+Knight&font=inter', tag: 'DC', category: 'DC' },
+          { name: 'Goku Ultra Instinct', price: 'Tk 520', image: 'https://placehold.co/400x533/141414/FFD700?text=Goku+Ultra+Instinct&font=inter', tag: 'Anime', category: 'Dragon Ball Z' },
+          { name: 'Eleven', price: 'Tk 420', image: 'https://placehold.co/400x533/141414/FFD700?text=Eleven&font=inter', tag: 'Stranger Things', category: 'Stranger Things' },
+          { name: 'Spider-Man Miles', price: 'Tk 480', image: 'https://placehold.co/400x533/141414/FFD700?text=Spider-Man+Miles&font=inter', tag: 'Marvel', category: 'Marvel' },
+          { name: 'Luffy Gear 5', price: 'Tk 550', image: 'https://placehold.co/400x533/141414/FFD700?text=Luffy+Gear+5&font=inter', tag: 'Anime', category: 'One Piece' },
         ];
         const defaultCategories = ['Marvel','DC','Anime','Dragon Ball Z','Stranger Things','One Piece'];
 
@@ -372,7 +372,7 @@ import '../styles/global.css';
           if (products.length === 0) { tbody.innerHTML = ''; empty.style.display = 'block'; return; }
           empty.style.display = 'none';
           tbody.innerHTML = products.map(function(p, idx) {
-            var imgSrc = p.image && p.image.startsWith('data:') ? p.image : (p.image || '/images/product-1.svg');
+            var imgSrc = p.image && p.image.startsWith('data:') ? p.image : (p.image || 'https://placehold.co/400x533/141414/FFD700?text=Product&font=inter');
             return '<tr>' +
               '<td data-label="Image"><img src="' + imgSrc + '" style="width:40px;height:40px;border-radius:6px;object-fit:contain;background:var(--bg);border:1px solid var(--border);" /></td>' +
               '<td data-label="Name">' + p.name + '</td>' +
@@ -444,7 +444,7 @@ import '../styles/global.css';
           var product = {
             name: name,
             price: price,
-            image: prodImageHidden.value || '/images/product-1.svg',
+            image: prodImageHidden.value || 'https://placehold.co/400x533/141414/FFD700?text=Product&font=inter',
             tag: document.getElementById('prodTag').value.trim(),
             category: document.getElementById('prodCategory').value,
           };
