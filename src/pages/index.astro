@@ -54,6 +54,9 @@ import Layout from '../layouts/Layout.astro';
   <!-- PRODUCTS -->
   <section id="products" class="section-products">
     <div class="page-container">
+      <!-- Category filter tabs -->
+      <div id="categoryFilters" class="flex flex-wrap items-center gap-2 mb-6"></div>
+
       <div id="productGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3"></div>
 
     </div>
@@ -70,6 +73,9 @@ import Layout from '../layouts/Layout.astro';
     { name: 'Spider-Man Miles', price: 'Tk 480', image: '/images/product-5.svg', tag: 'Marvel', category: 'Marvel' },
     { name: 'Luffy Gear 5', price: 'Tk 550', image: '/images/product-6.svg', tag: 'Anime', category: 'One Piece' },
   ];
+  var defaultCategories = ['Marvel','DC','Anime','Dragon Ball Z','Stranger Things','One Piece'];
+
+  var currentCategory = 'All';
 
   function esc(str) { return String(str).replace(/"/g, '&quot;').replace(/'/g, '&#39;'); }
 
@@ -78,11 +84,44 @@ import Layout from '../layouts/Layout.astro';
     catch { return defaultProducts; }
   }
 
+  function getCategories() {
+    try { return JSON.parse(localStorage.getItem('jv_categories')) || defaultCategories; }
+    catch { return defaultCategories; }
+  }
+
+  function renderCategoryFilters() {
+    var container = document.getElementById('categoryFilters');
+    if (!container) return;
+    var cats = getCategories();
+    var allCats = ['All'].concat(cats);
+    container.innerHTML = allCats.map(function(c) {
+      var active = c === currentCategory ? ' category-filter-active' : '';
+      return '<button class="category-filter' + active + '" data-cat="' + esc(c) + '">' + esc(c) + '</button>';
+    }).join('');
+    container.querySelectorAll('.category-filter').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        currentCategory = this.dataset.cat;
+        renderCategoryFilters();
+        renderProducts();
+      });
+    });
+  }
+
   function renderProducts() {
     var products = getProducts();
     var grid = document.getElementById('productGrid');
     if (!grid) return;
-    grid.innerHTML = products.map(function(p) {
+
+    var filtered = currentCategory === 'All'
+      ? products
+      : products.filter(function(p) { return p.category === currentCategory; });
+
+    if (filtered.length === 0) {
+      grid.innerHTML = '<p style="grid-column:1/-1;text-align:center;padding:60px 0;color:var(--muted);">No products in this category.</p>';
+      return;
+    }
+
+    grid.innerHTML = filtered.map(function(p) {
       return '<article class="card-product group cursor-pointer">' +
         '<div class="relative aspect-[3/4] overflow-hidden rounded-lg mb-2" style="background-color: var(--bg);">' +
         '<img src="' + p.image + '" alt="' + p.name + '" class="w-full h-full object-contain p-3 transition-transform duration-300 group-hover:scale-110" loading="lazy" />' +
@@ -108,5 +147,8 @@ import Layout from '../layouts/Layout.astro';
     });
   }
 
-  document.addEventListener('DOMContentLoaded', renderProducts);
+  document.addEventListener('DOMContentLoaded', function() {
+    renderCategoryFilters();
+    renderProducts();
+  });
 </script>

@@ -73,6 +73,7 @@ import '../styles/global.css';
         <button class="admin-nav-item" data-tab="categories">Categories</button>
         <button class="admin-nav-item" data-tab="settings">Settings</button>
         <a href="/" class="admin-nav-item" style="margin-top: 20px; border-top: 1px solid var(--border); padding-top: 16px;">Back to Store</a>
+        <button id="logoutBtn" class="admin-nav-item" style="color: var(--red);">Logout</button>
       </aside>
 
       <!-- Main Content -->
@@ -469,6 +470,12 @@ import '../styles/global.css';
           };
           setData('jv_settings', s);
           alert('Settings saved!');
+        });
+
+        // ─── Logout ───
+        document.getElementById('logoutBtn').addEventListener('click', function() {
+          setAuth(false);
+          location.reload();
         });
 
         // ─── Init ───
