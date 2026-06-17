@@ -5,32 +5,25 @@ import Layout from '../layouts/Layout.astro';
 <Layout title="JUMANJI VAULT - Premium LEGO Minifigures">
 
   <!-- HERO -->
-  <section class="section-hero relative overflow-hidden">
-    <!-- Glow backdrop (hidden on small screens) -->
-    <div class="absolute inset-0 overflow-hidden pointer-events-none max-md:hidden" aria-hidden="true">
-      <div class="absolute top-[-10%] left-1/2 -translate-x-1/2 w-[800px] h-[500px] rounded-full" style="background: radial-gradient(ellipse, rgba(255,215,0,0.08), transparent);"></div>
-      <div class="absolute top-[5%] left-[10%] w-[400px] h-[400px] rounded-full" style="background: radial-gradient(ellipse, rgba(232,0,45,0.05), transparent);"></div>
-    </div>
-
+  <section class="section-hero relative">
     <div class="page-container relative z-10 text-center">
       <!-- Headline -->
-      <h1 class="typo-display-xl mx-auto mb-3 md:mb-5" style="max-width: 800px; color: var(--white);">
+      <h1 class="typo-display-xl mx-auto mb-3 md:mb-5 text-gradient-brand" style="max-width: 800px; font-size: clamp(38px, 6vw, 72px); line-height: 1.05;">
         JUMANJI VAULT
       </h1>
 
-      <p class="typo-body-lg mx-auto mb-5 md:mb-8" style="color: var(--muted); max-width: 520px; font-size: clamp(15px, 2vw, 18px);">
+      <p class="mx-auto mb-5 md:mb-8 text-gradient-gold" style="max-width: 520px; font-size: clamp(13px, 1.6vw, 15px); line-height: 1.6;">
         Marvel, DC, Anime, Dragon Ball Z, and more. Authentic detail, premium ABS plastic, cash on delivery across Bangladesh.
       </p>
 
       <!-- CTAs -->
-      <div class="flex flex-col sm:flex-row items-center justify-center gap-2 md:gap-3 mb-6 md:mb-14">
-        <a href="#products" class="btn-gold hero-cta">
+      <div class="mb-6 md:mb-14">
+        <a href="#products" class="btn-ghost hero-cta">
           Browse Collection
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ml-1.5 md:ml-2">
             <path d="M5 12h14"/><path d="m12 5 7 7-7 7"/>
           </svg>
         </a>
-        <a href="#" class="btn-ghost hero-cta">Explore</a>
       </div>
 
       <!-- Feature pills -->
@@ -121,7 +114,7 @@ import Layout from '../layouts/Layout.astro';
         '<div class="relative aspect-[3/4] overflow-hidden rounded-lg mb-2" style="background-color: var(--bg);">' +
         '<img src="' + p.image + '" alt="' + p.name + '" class="w-full h-full object-contain p-3 transition-transform duration-300 group-hover:scale-110" loading="lazy" />' +
         (p.tag ? '<span class="badge-tag absolute top-2 left-2 z-10">' + p.tag + '</span>' : '') +
-        '<button type="button" class="absolute bottom-2 right-2 z-10 flex items-center justify-center" style="width:28px;height:28px;border-radius:9999px;background:linear-gradient(135deg,var(--gold),var(--gold2));color:var(--bg);border:none;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,0.4);" data-name="' + esc(p.name) + '" data-price="' + esc(p.price) + '" data-image="' + esc(p.image) + '">' +
+        '<button type="button" class="absolute bottom-2 right-2 z-10 flex items-center justify-center" style="width:28px;height:28px;border-radius:9999px;background:var(--white);color:var(--bg);border:none;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,0.4);" data-name="' + esc(p.name) + '" data-price="' + esc(p.price) + '" data-image="' + esc(p.image) + '">' +
         '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>' +
         '</button></div>' +
         '<div class="flex items-center justify-between gap-1">' +
