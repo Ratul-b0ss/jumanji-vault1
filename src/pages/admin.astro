@@ -86,7 +86,7 @@ import '../styles/global.css';
             <table class="admin-table" id="ordersTable">
               <thead>
                 <tr>
-                  <th>Order ID</th><th>Customer</th><th>User Number</th><th>Phone</th><th>Items</th><th>Total</th><th>Payment</th><th>Transaction</th><th>Date</th><th>Status</th>
+                  <th>Order ID</th><th>Customer</th><th>User Number</th><th>Phone</th><th>Items</th><th>Total</th><th>Payment</th><th>Transaction</th><th>Date</th><th>Status</th><th>Actions</th>
                 </tr>
               </thead>
               <tbody id="ordersBody"></tbody>
@@ -312,13 +312,23 @@ import '../styles/global.css';
               '<td data-label="Date" style="font-size: 12px;">' + new Date(order.date).toLocaleDateString() + '</td>' +
               '<td data-label="Status"><select class="status-select" data-idx="' + idx + '" style="background:var(--bg);color:var(--white);border:1px solid var(--border);border-radius:6px;padding:4px 8px;font-size:12px;">' +
                 ['pending','confirmed','shipped','delivered','cancelled'].map(function(s) { return '<option value="' + s + '"' + (order.status === s ? ' selected' : '') + '>' + s + '</option>'; }).join('') +
-              '</select></td></tr>';
+              '</select></td>' +
+              '<td data-label="Actions"><button class="delete-order" data-idx="' + idx + '" style="background:none;border:1px solid var(--red);color:var(--red);border-radius:6px;padding:4px 12px;font-size:12px;cursor:pointer;">Delete</button></td></tr>';
           }).join('');
           document.querySelectorAll('.status-select').forEach(function(sel) {
             sel.addEventListener('change', function() {
               var orders = getData('jv_orders', []);
               orders[parseInt(this.dataset.idx)].status = this.value;
               setData('jv_orders', orders);
+            });
+          });
+
+          document.querySelectorAll('.delete-order').forEach(function(btn) {
+            btn.addEventListener('click', function() {
+              var orders = getData('jv_orders', []);
+              orders.splice(parseInt(this.dataset.idx), 1);
+              setData('jv_orders', orders);
+              renderOrders();
             });
           });
         }
