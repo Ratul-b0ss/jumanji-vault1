@@ -7,7 +7,7 @@ import '../styles/global.css';
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width" />
-    <title>Admin - JUMANJI VAULT</title>
+    <title>Admin - BRICK RUSH</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
@@ -49,7 +49,7 @@ import '../styles/global.css';
     <!-- ═══════ LOGIN SCREEN ═══════ -->
     <div id="loginScreen" class="login-screen">
       <div class="login-card">
-        <h1>JUMANJI VAULT</h1>
+        <h1>BRICK RUSH</h1>
         <p>Admin Panel — sign in to continue</p>
         <div class="form-group">
           <label class="form-label">Username</label>
@@ -68,7 +68,7 @@ import '../styles/global.css';
     <div id="adminDashboard" class="admin-layout hidden">
       <!-- Sidebar -->
       <aside class="admin-sidebar">
-        <div class="admin-sidebar-title">JUMANJI ADMIN</div>
+        <div class="admin-sidebar-title">BRICK RUSH ADMIN</div>
         <button class="admin-nav-item active" data-tab="orders">Orders</button>
         <button class="admin-nav-item" data-tab="products">Products</button>
         <button class="admin-nav-item" data-tab="categories">Categories</button>
@@ -187,7 +187,7 @@ import '../styles/global.css';
       //  AUTHENTICATION
       // ═══════════════════════════════════════════
       var ADMIN_USER = 'admin';
-      var ADMIN_PASS = 'jumanji2024';
+      var ADMIN_PASS = 'brickrush2024';
 
       function checkAuth() {
         try { return localStorage.getItem('jv_admin_auth') === 'true'; } catch { return false; }
