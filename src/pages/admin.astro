@@ -86,7 +86,7 @@ import '../styles/global.css';
             <table class="admin-table" id="ordersTable">
               <thead>
                 <tr>
-                  <th>Order ID</th><th>Customer</th><th>Phone</th><th>Items</th><th>Total</th><th>Payment</th><th>Date</th><th>Status</th>
+                  <th>Order ID</th><th>Customer</th><th>User Number</th><th>Phone</th><th>Items</th><th>Total</th><th>Payment</th><th>Transaction</th><th>Date</th><th>Status</th>
                 </tr>
               </thead>
               <tbody id="ordersBody"></tbody>
@@ -303,10 +303,12 @@ import '../styles/global.css';
             return '<tr>' +
               '<td data-label="Order ID" style="font-family: monospace; font-size: 12px;">' + order.id + '</td>' +
               '<td data-label="Customer">' + (order.customer ? order.customer.name : 'N/A') + '</td>' +
+              '<td data-label="User Number">' + (order.customer ? order.customer.phone : 'N/A') + '</td>' +
               '<td data-label="Phone">' + (order.customer ? order.customer.phone : 'N/A') + '</td>' +
               '<td data-label="Items">' + (order.items ? order.items.length + ' items' : 'N/A') + '</td>' +
               '<td data-label="Total" style="color: var(--gold);">Tk ' + order.total + '</td>' +
               '<td data-label="Payment">' + order.payment + (order.paymentRef ? ' (' + order.paymentRef + ')' : '') + '</td>' +
+              '<td data-label="Transaction">' + (order.transactionId || order.paymentRef || '-') + '</td>' +
               '<td data-label="Date" style="font-size: 12px;">' + new Date(order.date).toLocaleDateString() + '</td>' +
               '<td data-label="Status"><select class="status-select" data-idx="' + idx + '" style="background:var(--bg);color:var(--white);border:1px solid var(--border);border-radius:6px;padding:4px 8px;font-size:12px;">' +
                 ['pending','confirmed','shipped','delivered','cancelled'].map(function(s) { return '<option value="' + s + '"' + (order.status === s ? ' selected' : '') + '>' + s + '</option>'; }).join('') +
