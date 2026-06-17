@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="600" height="600" viewBox="0 0 600 600">
+  <defs>
+    <linearGradient id="bg4" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#fafafa"/>
+      <stop offset="100%" style="stop-color:#ebebeb"/>
+    </linearGradient>
+  </defs>
+  <rect width="600" height="600" fill="url(#bg4)"/>
+  <ellipse cx="300" cy="320" rx="140" ry="60" fill="#171717"/>
+  <ellipse cx="300" cy="310" rx="130" ry="50" fill="#262626"/>
+  <ellipse cx="300" cy="300" rx="100" ry="35" fill="#333"/>
+  <ellipse cx="300" cy="290" rx="60" ry="20" fill="#404040"/>
+  <circle cx="300" cy="285" r="25" fill="none" stroke="#0070f3" stroke-width="2.5"/>
+  <circle cx="300" cy="285" r="10" fill="#0070f3" opacity="0.3"/>
+  <rect x="265" y="350" width="70" height="5" rx="2.5" fill="#404040"/>
+  <text x="300" y="450" text-anchor="middle" font-family="Inter, system-ui" font-size="14" font-weight="600" fill="#171717">Zenith Lamp</text>
+  <text x="300" y="470" text-anchor="middle" font-family="Inter, system-ui" font-size="12" fill="#888">$149</text>
+</svg>

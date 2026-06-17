@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="600" height="600" viewBox="0 0 600 600">
+  <defs>
+    <linearGradient id="bg2" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#fafafa"/>
+      <stop offset="100%" style="stop-color:#ebebeb"/>
+    </linearGradient>
+  </defs>
+  <rect width="600" height="600" fill="url(#bg2)"/>
+  <rect x="180" y="160" width="240" height="280" rx="20" fill="#171717"/>
+  <rect x="195" y="180" width="210" height="200" rx="8" fill="#262626"/>
+  <rect x="220" y="210" width="160" height="140" rx="4" fill="#333"/>
+  <circle cx="300" cy="280" r="30" fill="none" stroke="#7928ca" stroke-width="2"/>
+  <path d="M290 270 L310 280 L290 290Z" fill="#7928ca" opacity="0.6"/>
+  <rect x="260" y="400" width="80" height="6" rx="3" fill="#404040"/>
+  <circle cx="300" cy="420" r="4" fill="#404040"/>
+  <text x="300" y="490" text-anchor="middle" font-family="Inter, system-ui" font-size="14" font-weight="600" fill="#171717">Arc Display</text>
+  <text x="300" y="510" text-anchor="middle" font-family="Inter, system-ui" font-size="12" fill="#888">$599</text>
+</svg>

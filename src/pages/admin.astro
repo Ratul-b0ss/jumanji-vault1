@@ -1,0 +1,482 @@
+---
+import '../styles/global.css';
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>Admin - JUMANJI VAULT</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet" />
+    <style>
+      .login-screen {
+        position: fixed; inset: 0; z-index: 999;
+        display: flex; align-items: center; justify-content: center;
+        background-color: var(--bg);
+      }
+      .login-card {
+        background-color: var(--card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 40px 32px;
+        width: 100%; max-width: 380px;
+      }
+      .login-card h1 {
+        font-size: 24px; font-weight: 700; color: var(--white);
+        text-align: center; margin-bottom: 8px;
+      }
+      .login-card p {
+        font-size: 14px; color: var(--muted);
+        text-align: center; margin-bottom: 24px;
+      }
+      .login-error {
+        color: var(--red); font-size: 13px;
+        text-align: center; margin-top: 12px;
+        display: none;
+      }
+      .preview-img {
+        width: 60px; height: 60px; border-radius: var(--rounded-md);
+        object-fit: contain; background-color: var(--bg);
+        border: 1px solid var(--border);
+      }
+    </style>
+  </head>
+  <body>
+    <!-- ═══════ LOGIN SCREEN ═══════ -->
+    <div id="loginScreen" class="login-screen">
+      <div class="login-card">
+        <h1>JUMANJI VAULT</h1>
+        <p>Admin Panel — sign in to continue</p>
+        <div class="form-group">
+          <label class="form-label">Username</label>
+          <input type="text" class="form-input" id="loginUser" placeholder="Username" autocomplete="off" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Password</label>
+          <input type="password" class="form-input" id="loginPass" placeholder="Password" />
+        </div>
+        <button id="loginBtn" class="btn-gold w-full justify-center" style="margin-top: 8px;">Sign In</button>
+        <div id="loginError" class="login-error">Invalid username or password</div>
+      </div>
+    </div>
+
+    <!-- ═══════ ADMIN DASHBOARD ═══════ -->
+    <div id="adminDashboard" class="admin-layout hidden">
+      <!-- Sidebar -->
+      <aside class="admin-sidebar">
+        <div class="admin-sidebar-title">JUMANJI ADMIN</div>
+        <button class="admin-nav-item active" data-tab="orders">Orders</button>
+        <button class="admin-nav-item" data-tab="products">Products</button>
+        <button class="admin-nav-item" data-tab="categories">Categories</button>
+        <button class="admin-nav-item" data-tab="settings">Settings</button>
+        <a href="/" class="admin-nav-item" style="margin-top: 20px; border-top: 1px solid var(--border); padding-top: 16px;">Back to Store</a>
+      </aside>
+
+      <!-- Main Content -->
+      <main class="admin-main">
+        <!-- ORDERS TAB -->
+        <div id="tab-orders" class="admin-tab">
+          <h2 style="font-size: 20px; font-weight: 600; color: var(--white); margin-bottom: 16px;">Orders</h2>
+          <div class="card-admin" style="overflow-x: auto;">
+            <table class="admin-table" id="ordersTable">
+              <thead>
+                <tr>
+                  <th>Order ID</th><th>Customer</th><th>Phone</th><th>Items</th><th>Total</th><th>Payment</th><th>Date</th><th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="ordersBody"></tbody>
+            </table>
+            <p id="ordersEmpty" style="text-align: center; padding: 40px 0; color: var(--muted); display: none;">No orders yet.</p>
+          </div>
+        </div>
+
+        <!-- PRODUCTS TAB -->
+        <div id="tab-products" class="admin-tab hidden">
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px;">
+            <h2 style="font-size: 20px; font-weight: 600; color: var(--white);">Products</h2>
+            <button id="addProductBtn" class="btn-gold" style="height: 36px; font-size: 13px; padding: 0 16px;">+ Add Product</button>
+          </div>
+
+          <!-- Product Form (hidden) -->
+          <div id="productForm" class="card-admin hidden" style="margin-bottom: 16px;">
+            <h3 id="productFormTitle" style="font-size: 16px; font-weight: 600; color: var(--white); margin-bottom: 12px;">Add Product</h3>
+            <input type="hidden" id="editProductIndex" value="-1" />
+            <div class="form-group">
+              <label class="form-label">Product Name</label>
+              <input type="text" class="form-input" id="prodName" placeholder="e.g. Iron Man Mk 85" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Price</label>
+              <input type="text" class="form-input" id="prodPrice" placeholder="e.g. Tk 450" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Product Image</label>
+              <input type="file" id="prodImageInput" accept="image/*" style="width:100%;color:var(--muted);font-size:13px;background:var(--bg);border:1px solid var(--border);border-radius:var(--rounded-md);padding:8px 12px;" />
+              <div style="display:flex;align-items:center;gap:12px;margin-top:8px;">
+                <img id="prodImagePreview" class="preview-img hidden" />
+                <span id="prodImageName" style="font-size:12px;color:var(--muted);"></span>
+              </div>
+              <!-- Hidden field to store base64 data URL -->
+              <input type="hidden" id="prodImage" value="" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Tag / Category Label</label>
+              <input type="text" class="form-input" id="prodTag" placeholder="e.g. Marvel" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Category</label>
+              <select class="form-select" id="prodCategory"></select>
+            </div>
+            <div style="display: flex; gap: 8px;">
+              <button id="saveProductBtn" class="btn-gold" style="height: 36px; font-size: 13px; padding: 0 16px;">Save Product</button>
+              <button id="cancelProductBtn" class="btn-ghost" style="height: 36px; font-size: 13px; padding: 0 16px;">Cancel</button>
+            </div>
+          </div>
+
+          <div class="card-admin" style="overflow-x: auto;">
+            <table class="admin-table">
+              <thead><tr><th>Image</th><th>Name</th><th>Price</th><th>Tag</th><th>Category</th><th>Actions</th></tr></thead>
+              <tbody id="productsBody"></tbody>
+            </table>
+            <p id="productsEmpty" style="text-align: center; padding: 40px 0; color: var(--muted); display: none;">No products yet.</p>
+          </div>
+        </div>
+
+        <!-- CATEGORIES TAB -->
+        <div id="tab-categories" class="admin-tab hidden">
+          <h2 style="font-size: 20px; font-weight: 600; color: var(--white); margin-bottom: 16px;">Categories</h2>
+          <div style="display: flex; gap: 8px; margin-bottom: 16px;">
+            <input type="text" id="newCategoryInput" class="form-input" style="max-width: 300px;" placeholder="New category name" />
+            <button id="addCategoryBtn" class="btn-gold" style="height: 40px; font-size: 13px; padding: 0 16px;">Add</button>
+          </div>
+          <div class="card-admin">
+            <div id="categoriesList"></div>
+            <p id="categoriesEmpty" style="text-align: center; padding: 40px 0; color: var(--muted); display: none;">No categories yet.</p>
+          </div>
+        </div>
+
+        <!-- SETTINGS TAB -->
+        <div id="tab-settings" class="admin-tab hidden">
+          <h2 style="font-size: 20px; font-weight: 600; color: var(--white); margin-bottom: 16px;">Store Settings</h2>
+          <div class="card-admin" style="max-width: 500px;">
+            <div class="form-group">
+              <label class="form-label">Phone Number (displayed in footer)</label>
+              <input type="text" class="form-input" id="setPhone" placeholder="+8801XXXXXXXXX" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">bKash Number</label>
+              <input type="text" class="form-input" id="setBkash" placeholder="01XXXXXXXXX" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Nagad Number</label>
+              <input type="text" class="form-input" id="setNagad" placeholder="01XXXXXXXXX" />
+            </div>
+            <button id="saveSettingsBtn" class="btn-gold" style="height: 40px; font-size: 14px; padding: 0 20px;">Save Settings</button>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <script>
+      // ═══════════════════════════════════════════
+      //  AUTHENTICATION
+      // ═══════════════════════════════════════════
+      var ADMIN_USER = 'admin';
+      var ADMIN_PASS = 'jumanji2024';
+
+      function checkAuth() {
+        try { return localStorage.getItem('jv_admin_auth') === 'true'; } catch { return false; }
+      }
+      function setAuth(val) {
+        try { localStorage.setItem('jv_admin_auth', val ? 'true' : ''); } catch {}
+      }
+
+      var loginScreen = document.getElementById('loginScreen');
+      var adminDashboard = document.getElementById('adminDashboard');
+
+      function showDashboard() {
+        loginScreen.classList.add('hidden');
+        adminDashboard.classList.remove('hidden');
+        initAdmin();
+      }
+
+      if (checkAuth()) {
+        showDashboard();
+      } else {
+        loginScreen.classList.remove('hidden');
+        adminDashboard.classList.add('hidden');
+      }
+
+      document.getElementById('loginBtn').addEventListener('click', function() {
+        var user = document.getElementById('loginUser').value.trim();
+        var pass = document.getElementById('loginPass').value;
+        var errEl = document.getElementById('loginError');
+        if (user === ADMIN_USER && pass === ADMIN_PASS) {
+          setAuth(true);
+          errEl.style.display = 'none';
+          showDashboard();
+        } else {
+          errEl.style.display = 'block';
+        }
+      });
+
+      // Allow Enter key to submit login
+      document.getElementById('loginPass').addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') document.getElementById('loginBtn').click();
+      });
+      document.getElementById('loginUser').addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') document.getElementById('loginBtn').click();
+      });
+
+      // ═══════════════════════════════════════════
+      //  ADMIN DATA
+      // ═══════════════════════════════════════════
+      var initRan = false;
+
+      function initAdmin() {
+        if (initRan) return;
+        initRan = true;
+
+        function getData(key, fallback) {
+          try { return JSON.parse(localStorage.getItem(key)) || fallback; } catch { return fallback; }
+        }
+        function setData(key, val) { localStorage.setItem(key, JSON.stringify(val)); }
+
+        const defaultProducts = [
+          { name: 'Iron Man Mk 85', price: 'Tk 450', image: '/images/product-1.svg', tag: 'Marvel', category: 'Marvel' },
+          { name: 'Batman Dark Knight', price: 'Tk 380', image: '/images/product-2.svg', tag: 'DC', category: 'DC' },
+          { name: 'Goku Ultra Instinct', price: 'Tk 520', image: '/images/product-3.svg', tag: 'Anime', category: 'Dragon Ball Z' },
+          { name: 'Eleven', price: 'Tk 420', image: '/images/product-4.svg', tag: 'Stranger Things', category: 'Stranger Things' },
+          { name: 'Spider-Man Miles', price: 'Tk 480', image: '/images/product-5.svg', tag: 'Marvel', category: 'Marvel' },
+          { name: 'Luffy Gear 5', price: 'Tk 550', image: '/images/product-6.svg', tag: 'Anime', category: 'One Piece' },
+        ];
+        const defaultCategories = ['Marvel','DC','Anime','Dragon Ball Z','Stranger Things','One Piece'];
+
+        // ─── Image Upload ───
+        var prodImageInput = document.getElementById('prodImageInput');
+        var prodImagePreview = document.getElementById('prodImagePreview');
+        var prodImageName = document.getElementById('prodImageName');
+        var prodImageHidden = document.getElementById('prodImage');
+
+        prodImageInput.addEventListener('change', function() {
+          var file = this.files[0];
+          if (!file) {
+            prodImagePreview.classList.add('hidden');
+            prodImageName.textContent = '';
+            prodImageHidden.value = '';
+            return;
+          }
+          prodImageName.textContent = file.name;
+          var reader = new FileReader();
+          reader.onload = function(e) {
+            prodImagePreview.src = e.target.result;
+            prodImagePreview.classList.remove('hidden');
+            prodImageHidden.value = e.target.result;
+          };
+          reader.readAsDataURL(file);
+        });
+
+        // ─── Tab Switching ───
+        document.querySelectorAll('[data-tab]').forEach(function(btn) {
+          btn.addEventListener('click', function() {
+            document.querySelectorAll('[data-tab]').forEach(function(b) { b.classList.remove('active'); });
+            this.classList.add('active');
+            document.querySelectorAll('.admin-tab').forEach(function(t) { t.classList.add('hidden'); });
+            var tab = document.getElementById('tab-' + this.dataset.tab);
+            if (tab) tab.classList.remove('hidden');
+          });
+        });
+
+        // ─── Orders ───
+        function renderOrders() {
+          var orders = getData('jv_orders', []);
+          var tbody = document.getElementById('ordersBody');
+          var empty = document.getElementById('ordersEmpty');
+          if (orders.length === 0) { tbody.innerHTML = ''; empty.style.display = 'block'; return; }
+          empty.style.display = 'none';
+          tbody.innerHTML = orders.map(function(order, idx) {
+            return '<tr>' +
+              '<td style="font-family: monospace; font-size: 12px;">' + order.id + '</td>' +
+              '<td>' + (order.customer ? order.customer.name : 'N/A') + '</td>' +
+              '<td>' + (order.customer ? order.customer.phone : 'N/A') + '</td>' +
+              '<td>' + (order.items ? order.items.length + ' items' : 'N/A') + '</td>' +
+              '<td style="color: var(--gold);">Tk ' + order.total + '</td>' +
+              '<td>' + order.payment + (order.paymentRef ? ' (' + order.paymentRef + ')' : '') + '</td>' +
+              '<td style="font-size: 12px;">' + new Date(order.date).toLocaleDateString() + '</td>' +
+              '<td><select class="status-select" data-idx="' + idx + '" style="background:var(--bg);color:var(--white);border:1px solid var(--border);border-radius:6px;padding:4px 8px;font-size:12px;">' +
+                ['pending','confirmed','shipped','delivered','cancelled'].map(function(s) { return '<option value="' + s + '"' + (order.status === s ? ' selected' : '') + '>' + s + '</option>'; }).join('') +
+              '</select></td></tr>';
+          }).join('');
+          document.querySelectorAll('.status-select').forEach(function(sel) {
+            sel.addEventListener('change', function() {
+              var orders = getData('jv_orders', []);
+              orders[parseInt(this.dataset.idx)].status = this.value;
+              setData('jv_orders', orders);
+            });
+          });
+        }
+
+        // ─── Categories ───
+        function renderCategories() {
+          var cats = getData('jv_categories', defaultCategories);
+          var container = document.getElementById('categoriesList');
+          var empty = document.getElementById('categoriesEmpty');
+          if (cats.length === 0) { container.innerHTML = ''; empty.style.display = 'block'; return; }
+          empty.style.display = 'none';
+          container.innerHTML = cats.map(function(cat, idx) {
+            return '<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);">' +
+              '<span style="color:var(--white);font-size:14px;">' + cat + '</span>' +
+              '<button class="delete-cat" data-idx="' + idx + '" style="background:none;border:1px solid var(--border);color:var(--muted);border-radius:6px;padding:4px 12px;font-size:12px;cursor:pointer;">Delete</button></div>';
+          }).join('');
+          document.querySelectorAll('.delete-cat').forEach(function(btn) {
+            btn.addEventListener('click', function() {
+              var cats = getData('jv_categories', defaultCategories);
+              cats.splice(parseInt(this.dataset.idx), 1);
+              setData('jv_categories', cats);
+              renderCategories();
+              populateCategorySelect();
+            });
+          });
+          populateCategorySelect();
+        }
+
+        document.getElementById('addCategoryBtn').addEventListener('click', function() {
+          var input = document.getElementById('newCategoryInput');
+          var name = input.value.trim();
+          if (!name) return;
+          var cats = getData('jv_categories', defaultCategories);
+          cats.push(name);
+          setData('jv_categories', cats);
+          input.value = '';
+          renderCategories();
+        });
+
+        function populateCategorySelect() {
+          var cats = getData('jv_categories', defaultCategories);
+          var sel = document.getElementById('prodCategory');
+          if (sel) {
+            sel.innerHTML = cats.map(function(c) { return '<option value="' + c + '">' + c + '</option>'; }).join('');
+          }
+        }
+
+        // ─── Products ───
+        function renderProducts() {
+          var products = getData('jv_products', defaultProducts);
+          var tbody = document.getElementById('productsBody');
+          var empty = document.getElementById('productsEmpty');
+          if (products.length === 0) { tbody.innerHTML = ''; empty.style.display = 'block'; return; }
+          empty.style.display = 'none';
+          tbody.innerHTML = products.map(function(p, idx) {
+            var imgSrc = p.image && p.image.startsWith('data:') ? p.image : (p.image || '/images/product-1.svg');
+            return '<tr>' +
+              '<td><img src="' + imgSrc + '" style="width:40px;height:40px;border-radius:6px;object-fit:contain;background:var(--bg);border:1px solid var(--border);" /></td>' +
+              '<td>' + p.name + '</td>' +
+              '<td style="color:var(--gold);">' + p.price + '</td>' +
+              '<td>' + (p.tag || '-') + '</td>' +
+              '<td>' + (p.category || '-') + '</td>' +
+              '<td><button class="edit-prod" data-idx="' + idx + '" style="background:none;border:1px solid var(--border);color:var(--white);border-radius:6px;padding:4px 12px;font-size:12px;cursor:pointer;margin-right:4px;">Edit</button>' +
+              '<button class="delete-prod" data-idx="' + idx + '" style="background:none;border:1px solid var(--red);color:var(--red);border-radius:6px;padding:4px 12px;font-size:12px;cursor:pointer;">Delete</button></td></tr>';
+          }).join('');
+
+          document.querySelectorAll('.edit-prod').forEach(function(btn) {
+            btn.addEventListener('click', function() {
+              var products = getData('jv_products', defaultProducts);
+              var p = products[parseInt(this.dataset.idx)];
+              document.getElementById('editProductIndex').value = this.dataset.idx;
+              document.getElementById('prodName').value = p.name;
+              document.getElementById('prodPrice').value = p.price;
+              // Show existing image preview
+              var imgSrc = p.image || '';
+              prodImageHidden.value = imgSrc;
+              if (imgSrc) {
+                prodImagePreview.src = imgSrc;
+                prodImagePreview.classList.remove('hidden');
+                prodImageName.textContent = '(current image)';
+              } else {
+                prodImagePreview.classList.add('hidden');
+                prodImageName.textContent = '';
+              }
+              document.getElementById('prodTag').value = p.tag || '';
+              document.getElementById('prodCategory').value = p.category || '';
+              document.getElementById('productFormTitle').textContent = 'Edit Product';
+              document.getElementById('productForm').classList.remove('hidden');
+            });
+          });
+
+          document.querySelectorAll('.delete-prod').forEach(function(btn) {
+            btn.addEventListener('click', function() {
+              var products = getData('jv_products', defaultProducts);
+              products.splice(parseInt(this.dataset.idx), 1);
+              setData('jv_products', products);
+              renderProducts();
+            });
+          });
+        }
+
+        document.getElementById('addProductBtn').addEventListener('click', function() {
+          document.getElementById('editProductIndex').value = '-1';
+          document.getElementById('prodName').value = '';
+          document.getElementById('prodPrice').value = '';
+          prodImageInput.value = '';
+          prodImageHidden.value = '';
+          prodImagePreview.classList.add('hidden');
+          prodImageName.textContent = '';
+          document.getElementById('prodTag').value = '';
+          document.getElementById('productFormTitle').textContent = 'Add Product';
+          document.getElementById('productForm').classList.remove('hidden');
+        });
+
+        document.getElementById('cancelProductBtn').addEventListener('click', function() {
+          document.getElementById('productForm').classList.add('hidden');
+        });
+
+        document.getElementById('saveProductBtn').addEventListener('click', function() {
+          var name = document.getElementById('prodName').value.trim();
+          var price = document.getElementById('prodPrice').value.trim();
+          if (!name || !price) return;
+          var products = getData('jv_products', defaultProducts);
+          var idx = parseInt(document.getElementById('editProductIndex').value);
+          var product = {
+            name: name,
+            price: price,
+            image: prodImageHidden.value || '/images/product-1.svg',
+            tag: document.getElementById('prodTag').value.trim(),
+            category: document.getElementById('prodCategory').value,
+          };
+          if (idx >= 0 && idx < products.length) products[idx] = product;
+          else products.push(product);
+          setData('jv_products', products);
+          document.getElementById('productForm').classList.add('hidden');
+          renderProducts();
+        });
+
+        // ─── Settings ───
+        function loadSettings() {
+          var s = getData('jv_settings', {});
+          document.getElementById('setPhone').value = s.phone || '';
+          document.getElementById('setBkash').value = s.bkash || '';
+          document.getElementById('setNagad').value = s.nagad || '';
+        }
+
+        document.getElementById('saveSettingsBtn').addEventListener('click', function() {
+          var s = {
+            phone: document.getElementById('setPhone').value.trim(),
+            bkash: document.getElementById('setBkash').value.trim(),
+            nagad: document.getElementById('setNagad').value.trim(),
+          };
+          setData('jv_settings', s);
+          alert('Settings saved!');
+        });
+
+        // ─── Init ───
+        renderOrders();
+        renderProducts();
+        renderCategories();
+        loadSettings();
+      }
+    </script>
+  </body>
+</html>

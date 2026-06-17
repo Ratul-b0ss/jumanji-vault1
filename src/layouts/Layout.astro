@@ -1,0 +1,409 @@
+---
+import '../styles/global.css';
+
+interface Props {
+  title?: string;
+}
+
+const defaultTitle = 'JUMANJI VAULT - Bangladesh #1 Minifigure Store';
+const { title = defaultTitle } = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="generator" content={Astro.generator} />
+    <meta name="description" content="Premium LEGO Minifigures. Marvel, DC, Anime, Dragon Ball Z, Stranger Things. Cash on delivery across Bangladesh." />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet" />
+
+    <title>{title}</title>
+  </head>
+  <body>
+    <!-- Floating logo -->
+    <div class="absolute top-0 left-0 right-0 z-10" style="padding: var(--space-lg);">
+      <a href="/" class="inline-flex items-center gap-1.5 no-underline">
+        <span class="text-xs font-bold uppercase tracking-widest text-gold">JUMANJI</span>
+        <span class="text-sm font-bold uppercase tracking-widest" style="color: var(--white);">VAULT</span>
+      </a>
+    </div>
+
+    <!-- Sticky cart icon -->
+    <button id="cartBtn" class="sticky-cart" type="button">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="8" cy="21" r="1"/><circle cx="21" cy="21" r="1"/>
+        <path d="M3 3h3l2 12h13l3-8H8"/>
+      </svg>
+      <span id="cartBadge" class="cart-badge hidden">0</span>
+    </button>
+
+    <!-- Toast -->
+    <div id="toast" class="toast"></div>
+
+    <!-- ═══════ CART DRAWER (slides in from right) ═══════ -->
+    <div id="cartOverlay" class="drawer-overlay hidden"></div>
+    <div id="cartDrawer" class="cart-drawer translate-x-full">
+      <div class="flex flex-col h-full">
+        <!-- Drawer header -->
+        <div class="flex items-center justify-between px-5 py-4" style="border-bottom: 1px solid var(--border);">
+          <h2 class="typo-body-md-strong" style="color: var(--white);">Cart</h2>
+          <button id="closeDrawer" class="modal-close" type="button">&times;</button>
+        </div>
+
+        <!-- Drawer items container (uses event delegation for +/- clicks) -->
+        <div id="drawerItems" class="flex-1 overflow-y-auto px-5 py-4"></div>
+
+        <!-- Drawer footer -->
+        <div id="drawerFooter" class="hidden px-5 py-4" style="border-top: 1px solid var(--border);">
+          <div class="flex items-center justify-between mb-4">
+            <span class="typo-body-sm" style="color: var(--muted);">Total</span>
+            <span id="drawerTotal" class="typo-body-md-strong text-gold"></span>
+          </div>
+          <button id="checkoutBtn" class="btn-gold w-full justify-center" type="button">Proceed to Checkout</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════ CHECKOUT MODAL ═══════ -->
+    <div id="checkoutModal" class="modal-overlay hidden">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 class="typo-body-md-strong" style="color: var(--white);">Checkout</h2>
+          <button id="closeCheckout" class="modal-close" type="button">&times;</button>
+        </div>
+
+        <div id="checkoutItems" class="mb-4" style="max-height: 180px; overflow-y: auto;"></div>
+        <div id="checkoutTotal" class="text-right mb-5" style="font-size: 16px; font-weight: 600; color: var(--gold);"></div>
+
+        <form id="checkoutForm">
+          <div class="form-group">
+            <label class="form-label">Full Name</label>
+            <input type="text" class="form-input" id="custName" required placeholder="Your full name" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Phone Number</label>
+            <input type="tel" class="form-input" id="custPhone" required placeholder="01XXXXXXXXX" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Delivery Address</label>
+            <textarea class="form-textarea" id="custAddress" required placeholder="District, Thana, Area, Road/House"></textarea>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Payment Method</label>
+            <select class="form-select" id="paymentMethod">
+              <option value="cod">Cash on Delivery</option>
+              <option value="bkash">bKash</option>
+              <option value="nagad">Nagad</option>
+            </select>
+          </div>
+          <div id="paymentInfo" class="hidden" style="background: var(--bg); border-radius: var(--rounded-md); padding: var(--space-sm); margin-bottom: var(--space-md); font-size: 13px; color: var(--muted);"></div>
+          <div id="paymentRefGroup" class="form-group hidden">
+            <label class="form-label">Transaction ID</label>
+            <input type="text" class="form-input" id="paymentRef" placeholder="Send money and enter TrxID" />
+          </div>
+          <button type="submit" class="btn-gold w-full justify-center">Place Order</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- PAGE CONTENT -->
+    <main>
+      <slot />
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+      <div class="page-container">
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-12">
+          <div class="col-span-2 md:col-span-1">
+            <div class="flex items-center gap-1.5 mb-4">
+              <span class="text-xs font-bold uppercase tracking-widest text-gold">JUMANJI</span>
+              <span class="text-sm font-bold uppercase tracking-widest" style="color: var(--white);">VAULT</span>
+            </div>
+            <p class="typo-body-sm" style="color: var(--muted); max-width: 240px;">
+              Bangladesh #1 Minifigure Store. Premium LEGO Minifigures delivered to your door with cash on delivery.
+            </p>
+          </div>
+          <div>
+            <p class="typo-caption-mono mb-3" style="color: var(--gold);">PRODUCTS</p>
+            <ul class="space-y-2.5">
+              <li><a href="/" class="footer-link">All Minifigures</a></li>
+              <li><a href="/" class="footer-link">Marvel</a></li>
+              <li><a href="/" class="footer-link">DC</a></li>
+              <li><a href="/" class="footer-link">Anime</a></li>
+              <li><a href="/" class="footer-link">Dragon Ball Z</a></li>
+            </ul>
+          </div>
+          <div>
+            <p class="typo-caption-mono mb-3" style="color: var(--gold);">COMPANY</p>
+            <ul class="space-y-2.5">
+              <li><a href="#" class="footer-link">About</a></li>
+              <li><a href="#" class="footer-link">Contact</a></li>
+              <li><a href="/admin" class="footer-link">Admin</a></li>
+            </ul>
+          </div>
+          <div id="footerContact">
+            <p class="typo-caption-mono mb-3" style="color: var(--gold);">CONTACT</p>
+            <ul class="space-y-2.5">
+              <li class="typo-body-sm" style="color: var(--muted);" id="contactPhone">Phone: Loading...</li>
+              <li class="typo-body-sm" style="color: var(--muted);" id="contactBkash">bKash: Loading...</li>
+              <li class="typo-body-sm" style="color: var(--muted);" id="contactNagad">Nagad: Loading...</li>
+            </ul>
+          </div>
+        </div>
+        <div class="mt-12 pt-6 flex flex-col sm:flex-row items-center justify-between gap-4" style="border-top: 1px solid var(--border);">
+          <p class="typo-caption" style="color: var(--muted);">&copy; 2024 Jumanji Vault. All rights reserved.</p>
+          <div class="flex items-center gap-4">
+            <a href="#" class="typo-caption footer-link">Privacy</a>
+            <a href="#" class="typo-caption footer-link">Terms</a>
+            <a href="#" class="typo-caption footer-link">Cookies</a>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <!-- JavaScript - is:inline keeps it exactly here, no module processing -->
+    <script is:inline>
+      // ─── Helpers ───
+      var LS = localStorage;
+      function getLS(key, fallback) {
+        try { var d = JSON.parse(LS.getItem(key)); return d !== null && d !== undefined ? d : fallback; }
+        catch { return fallback; }
+      }
+      function setLS(key, val) { LS.setItem(key, JSON.stringify(val)); }
+      function esc(str) { return String(str).replace(/"/g, '&quot;').replace(/'/g, '&#39;'); }
+
+      // ─── Settings ───
+      function applySettings() {
+        var s = getLS('jv_settings', {});
+        var el = function(id) { return document.getElementById(id); };
+        if (el('contactPhone')) el('contactPhone').textContent = 'Phone: ' + (s.phone || 'Not set');
+        if (el('contactBkash')) el('contactBkash').textContent = 'bKash: ' + (s.bkash || 'Not set');
+        if (el('contactNagad')) el('contactNagad').textContent = 'Nagad: ' + (s.nagad || 'Not set');
+      }
+
+      // ─── Cart State ───
+      var cart = getLS('jv_cart', []);
+
+      function saveCart() {
+        setLS('jv_cart', cart);
+        updateBadge();
+      }
+
+      function updateBadge() {
+        var count = cart.reduce(function(s, i) { return s + i.qty; }, 0);
+        var badge = document.getElementById('cartBadge');
+        if (!badge) return;
+        if (count > 0) { badge.textContent = count; badge.classList.remove('hidden'); }
+        else { badge.classList.add('hidden'); }
+      }
+
+      // ─── Toast ───
+      var toastEl = document.getElementById('toast');
+      function showToast(msg) {
+        if (!toastEl) return;
+        toastEl.textContent = msg;
+        toastEl.classList.add('show', 'gold');
+        clearTimeout(toastEl._t);
+        toastEl._t = setTimeout(function() { toastEl.classList.remove('show'); }, 2000);
+      }
+
+      // ─── Add to Cart (exposed globally for index page + buttons) ───
+      window.addToCart = function(product) {
+        if (!product || !product.name) return;
+        var existing = cart.find(function(i) { return i.name === product.name; });
+        if (existing) { existing.qty += 1; }
+        else { cart.push({ name: product.name, price: product.price || 'Tk 0', image: product.image || '', qty: 1 }); }
+        saveCart();
+        showToast(product.name + ' added to cart');
+      };
+
+      // ─── Cart Drawer ───
+      var drawerItems = document.getElementById('drawerItems');
+      var drawerFooter = document.getElementById('drawerFooter');
+      var drawerTotal = document.getElementById('drawerTotal');
+      var cartOverlay = document.getElementById('cartOverlay');
+      var cartDrawer = document.getElementById('cartDrawer');
+
+      function renderDrawer() {
+        if (cart.length === 0) {
+          drawerItems.innerHTML = '<p style="color:var(--muted);text-align:center;padding:40px 0;">Your cart is empty</p>';
+          drawerFooter.classList.add('hidden');
+          return;
+        }
+        drawerFooter.classList.remove('hidden');
+        var html = '';
+        var total = 0;
+        for (var i = 0; i < cart.length; i++) {
+          var item = cart[i];
+          var priceNum = parseInt(String(item.price || '0').replace(/[^0-9]/g, '')) || 0;
+          total += priceNum * item.qty;
+          html += '<div class="cart-item" data-idx="' + i + '">' +
+            '<img class="cart-item-img" src="' + esc(item.image) + '" alt="' + esc(item.name) + '" />' +
+            '<div class="cart-item-info">' +
+            '<div class="cart-item-name">' + esc(item.name) + '</div>' +
+            '<div class="cart-item-price">' + esc(item.price) + '</div></div>' +
+            '<div class="cart-item-qty">' +
+            '<button class="qty-btn" data-action="dec">-</button>' +
+            '<span class="qty-value">' + item.qty + '</span>' +
+            '<button class="qty-btn" data-action="inc">+</button></div></div>';
+        }
+        drawerItems.innerHTML = html;
+        drawerTotal.textContent = 'Tk ' + total;
+      }
+
+      // Event delegation for qty buttons in the drawer
+      drawerItems.addEventListener('click', function(e) {
+        var btn = e.target.closest('.qty-btn');
+        if (!btn) return;
+        var cartItem = btn.closest('.cart-item');
+        if (!cartItem) return;
+        var idx = parseInt(cartItem.getAttribute('data-idx'));
+        if (isNaN(idx) || idx < 0 || idx >= cart.length) return;
+
+        if (btn.getAttribute('data-action') === 'dec') {
+          cart[idx].qty -= 1;
+          if (cart[idx].qty <= 0) cart.splice(idx, 1);
+        } else {
+          cart[idx].qty += 1;
+        }
+        saveCart();
+        renderDrawer();
+      });
+
+      // Open / close drawer
+      function openDrawer() {
+        renderDrawer();
+        cartOverlay.classList.remove('hidden');
+        cartDrawer.classList.remove('translate-x-full');
+        cartDrawer.classList.add('translate-x-0');
+        document.body.classList.add('modal-open');
+      }
+
+      function closeDrawerFn() {
+        cartDrawer.classList.remove('translate-x-0');
+        cartDrawer.classList.add('translate-x-full');
+        setTimeout(function() {
+          cartOverlay.classList.add('hidden');
+          document.body.classList.remove('modal-open');
+        }, 300);
+      }
+
+      document.getElementById('cartBtn').addEventListener('click', openDrawer);
+      document.getElementById('closeDrawer').addEventListener('click', closeDrawerFn);
+      cartOverlay.addEventListener('click', closeDrawerFn);
+
+      // ─── Checkout Modal ───
+      var checkoutModal = document.getElementById('checkoutModal');
+      var checkoutItems = document.getElementById('checkoutItems');
+      var checkoutTotal = document.getElementById('checkoutTotal');
+
+      function renderCheckoutSummary() {
+        if (cart.length === 0) {
+          checkoutItems.innerHTML = '<p style="color:var(--muted);text-align:center;padding:10px 0;">Cart is empty</p>';
+          checkoutTotal.textContent = '';
+          return;
+        }
+        var html = '';
+        var total = 0;
+        for (var i = 0; i < cart.length; i++) {
+          var item = cart[i];
+          var priceNum = parseInt(String(item.price || '0').replace(/[^0-9]/g, '')) || 0;
+          total += priceNum * item.qty;
+          html += '<div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--border);font-size:13px;">' +
+            '<span style="color:var(--white);flex:1;">' + esc(item.name) + ' x' + item.qty + '</span>' +
+            '<span style="color:var(--gold);">' + esc(item.price) + '</span></div>';
+        }
+        checkoutItems.innerHTML = html;
+        checkoutTotal.textContent = 'Total: Tk ' + total;
+      }
+
+      function openCheckout() {
+        renderCheckoutSummary();
+        checkoutModal.classList.remove('hidden');
+        document.body.classList.add('modal-open');
+      }
+
+      function closeCheckoutFn() {
+        checkoutModal.classList.add('hidden');
+        document.body.classList.remove('modal-open');
+      }
+
+      document.getElementById('checkoutBtn').addEventListener('click', function() {
+        closeDrawerFn();
+        setTimeout(openCheckout, 350);
+      });
+
+      document.getElementById('closeCheckout').addEventListener('click', closeCheckoutFn);
+      checkoutModal.addEventListener('click', function(e) {
+        if (e.target === checkoutModal) closeCheckoutFn();
+      });
+
+      // ─── Payment method toggle ───
+      var payMethod = document.getElementById('paymentMethod');
+      var payInfo = document.getElementById('paymentInfo');
+      var payRefGroup = document.getElementById('paymentRefGroup');
+
+      payMethod.addEventListener('change', function() {
+        var s = getLS('jv_settings', {});
+        if (this.value === 'bkash') {
+          payInfo.innerHTML = 'Send payment to bKash: <strong style="color:var(--gold);">' + esc(s.bkash || 'Not set') + '</strong>';
+          payInfo.classList.remove('hidden');
+          payRefGroup.classList.remove('hidden');
+        } else if (this.value === 'nagad') {
+          payInfo.innerHTML = 'Send payment to Nagad: <strong style="color:var(--gold);">' + esc(s.nagad || 'Not set') + '</strong>';
+          payInfo.classList.remove('hidden');
+          payRefGroup.classList.remove('hidden');
+        } else {
+          payInfo.classList.add('hidden');
+          payRefGroup.classList.add('hidden');
+        }
+      });
+
+      // ─── Submit Order ───
+      document.getElementById('checkoutForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        if (cart.length === 0) { showToast('Cart is empty'); return; }
+
+        var total = 0;
+        for (var i = 0; i < cart.length; i++) {
+          total += (parseInt(String(cart[i].price || '0').replace(/[^0-9]/g, '')) || 0) * cart[i].qty;
+        }
+
+        var order = {
+          id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
+          items: JSON.parse(JSON.stringify(cart)),
+          total: total,
+          customer: {
+            name: document.getElementById('custName').value,
+            phone: document.getElementById('custPhone').value,
+            address: document.getElementById('custAddress').value,
+          },
+          payment: payMethod.value,
+          paymentRef: document.getElementById('paymentRef').value || '',
+          status: 'pending',
+          date: new Date().toISOString(),
+        };
+
+        var orders = [].concat(getLS('jv_orders', []));
+        orders.unshift(order);
+        setLS('jv_orders', orders);
+
+        cart = [];
+        saveCart();
+        closeCheckoutFn();
+        this.reset();
+        showToast('Order placed! Ref: ' + order.id);
+      });
+
+      // ─── Init ───
+      applySettings();
+      updateBadge();
+    </script>
+  </body>
+</html>
