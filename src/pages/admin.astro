@@ -276,7 +276,12 @@ import '../styles/global.css';
           }
         };
         if (body && method !== 'GET') options.body = JSON.stringify(body);
-        return fetch(url, options).then(function(r) { if (!r.ok) throw new Error(r.statusText); return r.json(); });
+        return fetch(url, options).then(function(r) {
+          if (!r.ok) throw new Error(r.statusText);
+          // DELETE / PATCH with return=minimal returns 204 No Content (empty body)
+          if (r.status === 204 || r.headers.get('content-length') === '0') return null;
+          return r.json();
+        });
       }
 
       function getToken() { return localStorage.getItem('jv_token'); }
@@ -381,13 +386,10 @@ import '../styles/global.css';
 
       function render() { renderStats(); renderOrders(); renderInv(); renderCats(); updCats(); }
 
-      async function renderStats() {
-        try {
-          var ordersData = await supabaseRequest('GET', 'orders?select=total,status');
-          var rev = ordersData.reduce(function(s, o) { return o.status !== 'cancelled' ? s + (Number(o.total)||0) : s; }, 0);
-          document.getElementById('statRev').textContent = 'Tk ' + rev.toLocaleString();
-          document.getElementById('statOrd').textContent = ordersData.length;
-        } catch(e) {}
+      function renderStats() {
+        var rev = orders.reduce(function(s, o) { return o.status !== 'cancelled' ? s + (Number(o.total)||0) : s; }, 0);
+        document.getElementById('statRev').textContent = 'Tk ' + rev.toLocaleString();
+        document.getElementById('statOrd').textContent = orders.length;
       }
 
       window.deleteOrder = async function(i) {
