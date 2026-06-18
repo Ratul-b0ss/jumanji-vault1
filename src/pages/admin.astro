@@ -367,6 +367,7 @@ import '../styles/global.css';
                     <th>Customer</th>
                     <th>Items</th>
                     <th>Total</th>
+                    <th>Payment</th>
                     <th>Status</th>
                     <th class="text-right">Actions</th>
                   </tr>
@@ -701,7 +702,7 @@ import '../styles/global.css';
         const body = document.getElementById('ordersBody');
         if (!body) return;
         if (orders.length === 0) {
-          body.innerHTML = `<tr><td colspan="6" class="text-center py-12 text-accents-4 italic text-sm">No orders yet.</td></tr>`;
+          body.innerHTML = `<tr><td colspan="7" class="text-center py-12 text-accents-4 italic text-sm">No orders yet.</td></tr>`;
           return;
         }
         body.innerHTML = orders.map((o, i) => `
@@ -715,6 +716,10 @@ import '../styles/global.css';
               <div class="text-[10px] text-accents-5 truncate max-w-[200px]">${(o.items || []).map(it => it.name).join(', ')}</div>
             </td>
             <td class="text-cyan font-bold text-xs">Tk ${(Number(o.total) || 0).toLocaleString()}</td>
+            <td>
+              <div class="text-[10px] font-bold uppercase text-white">${o.payment?.method || 'cod'}</div>
+              <div class="text-[9px] text-accents-5">${o.payment?.trxId || 'N/A'}</div>
+            </td>
             <td><span class="status-badge">${o.status || 'pending'}</span></td>
             <td class="text-right">
               <button onclick="window.deleteOrder(${i})" class="text-error text-[10px] font-bold uppercase tracking-wider">Delete</button>

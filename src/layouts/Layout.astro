@@ -214,14 +214,42 @@ const { title = defaultTitle } = Astro.props;
       document.getElementById('closeDrawer').onclick = window.closeDrawer;
       document.getElementById('cartOverlay').onclick = window.closeDrawer;
 
+      // ─── Checkout UI Logic ───
+      const payMethod = document.getElementById('payMethod');
+      const trxContainer = document.getElementById('trxContainer');
+      const paymentInstructions = document.getElementById('paymentInstructions');
+      const paymentText = document.getElementById('paymentText');
+      const trxInput = document.getElementById('trxId');
+
+      payMethod.onchange = () => {
+        const val = payMethod.value;
+        const settings = JSON.parse(localStorage.getItem('jv_settings') || '{}');
+        
+        if (val === 'cod') {
+          trxContainer.classList.add('hidden');
+          paymentInstructions.classList.add('hidden');
+          trxInput.required = false;
+        } else {
+          trxContainer.classList.remove('hidden');
+          paymentInstructions.classList.remove('hidden');
+          trxInput.required = true;
+          
+          if (val === 'bkash') {
+            paymentText.innerHTML = `Please send money in advance to our Bkash Merchant number: <strong class="text-white">${settings.bkash || 'Not Set'}</strong>`;
+          } else if (val === 'nagad') {
+            paymentText.innerHTML = `Please send money in advance to our Nagad Personal number: <strong class="text-white">${settings.nagad || 'Not Set'}</strong>`;
+          }
+        }
+      };
+
       document.getElementById('checkoutBtn').onclick = () => {
         window.closeDrawer();
         setTimeout(() => {
           try {
             const s = JSON.parse(localStorage.getItem('jv_settings') || '{}');
-            document.getElementById('dispBkash').textContent = s.bkash || 'Not Set';
-            document.getElementById('dispNagad').textContent = s.nagad || 'Not Set';
             document.getElementById('dispContact').textContent = s.contact || 'Not Set';
+            // Trigger the change logic once to set initial state
+            payMethod.dispatchEvent(new Event('change'));
           } catch(e) {}
           toggleClass('checkoutModal', 'hidden', false);
           setTimeout(() => toggleClass('checkoutModal', 'opacity-0', false), 10);
@@ -244,6 +272,10 @@ const { title = defaultTitle } = Astro.props;
             name: document.getElementById('custName').value,
             phone: document.getElementById('custPhone').value,
             address: document.getElementById('custAddress').value,
+          },
+          payment: {
+            method: payMethod.value,
+            trxId: trxInput.value || 'N/A'
           },
           status: 'pending',
           date: new Date().toISOString()
