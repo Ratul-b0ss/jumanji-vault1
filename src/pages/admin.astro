@@ -11,7 +11,6 @@ import '../styles/global.css';
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet" />
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
       :root {
         --sidebar-width: 260px;
@@ -225,20 +224,6 @@ import '../styles/global.css';
         background: var(--accents-1); border: 1px solid var(--accents-2);
       }
 
-      .stats-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-        gap: 16px;
-        margin-bottom: 32px;
-      }
-
-      .stat-card {
-        padding: 20px;
-        background: var(--ds-background-200);
-        border: 1px solid var(--accents-2);
-        border-radius: 12px;
-      }
-
       .tab-content { display: none; }
       .tab-content.active { display: block; }
     </style>
@@ -341,23 +326,6 @@ import '../styles/global.css';
               </div>
               <button onclick="window.clearOrders()" class="btn-secondary !h-9 !px-4 !text-xs text-error border-error/20 hover:bg-error/5">Wipe Pipeline</button>
             </header>
-
-            <div class="stats-grid">
-              <div class="stat-card">
-                <div class="caption-mono text-[10px] text-accents-5 mb-1">Total Revenue</div>
-                <div id="statRevenue" class="text-2xl font-bold text-cyan">Tk 0</div>
-              </div>
-              <div class="stat-card">
-                <div class="caption-mono text-[10px] text-accents-5 mb-1">Active Orders</div>
-                <div id="statOrders" class="text-2xl font-bold">0</div>
-              </div>
-              <div class="stat-card md:col-span-2 lg:col-span-1">
-                <div class="caption-mono text-[10px] text-accents-5 mb-2">Revenue History (Last 10)</div>
-                <div class="h-16 w-full">
-                  <canvas id="orderChart"></canvas>
-                </div>
-              </div>
-            </div>
 
             <div class="table-container">
               <table>
@@ -595,7 +563,6 @@ import '../styles/global.css';
       let products = [];
       let categories = [];
       let settings = { contact: '', bkash: '', nagad: '' };
-      let orderChartInstance = null;
 
       const defaultProducts = [
         { name: 'Iron Man Mk 85', price: 'Tk 450', image: 'https://placehold.co/400x533/111/50e3c2?text=Iron+Man&font=inter', category: 'Marvel' },
@@ -643,59 +610,14 @@ import '../styles/global.css';
         renderInventory();
         renderCategories();
         updateCategoryDropdowns();
-        renderCharts();
       }
 
       function renderStats() {
         const totalRev = orders.reduce((sum, o) => sum + (Number(o.total) || 0), 0);
-        document.getElementById('statRevenue').textContent = 'Tk ' + totalRev.toLocaleString();
-        document.getElementById('statOrders').textContent = orders.length;
-      }
-
-      function renderCharts() {
-        if (typeof Chart === 'undefined') {
-          console.warn('Chart.js not loaded');
-          return;
-        }
-
-        try {
-          // Orders Chart
-          const orderCtx = document.getElementById('orderChart')?.getContext('2d');
-          if (orderCtx) {
-            if (orderChartInstance) orderChartInstance.destroy();
-            const lastOrders = orders.slice(-10).reverse();
-            const labels = lastOrders.map((_, i) => `#${i + 1}`);
-            const data = lastOrders.map(o => Number(o.total) || 0);
-
-            orderChartInstance = new Chart(orderCtx, {
-              type: 'line',
-              data: {
-                labels: labels,
-                datasets: [{
-                  label: 'Revenue',
-                  data: data,
-                  borderColor: '#50e3c2',
-                  backgroundColor: 'rgba(80, 227, 194, 0.1)',
-                  borderWidth: 2,
-                  fill: true,
-                  tension: 0.4,
-                  pointRadius: 0
-                }]
-              },
-              options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: { legend: { display: false } },
-                scales: {
-                  x: { display: false },
-                  y: { display: false }
-                }
-              }
-            });
-          }
-        } catch (e) {
-          console.error('Chart rendering failed:', e);
-        }
+        const statRevenue = document.getElementById('statRevenue');
+        const statOrders = document.getElementById('statOrders');
+        if (statRevenue) statRevenue.textContent = 'Tk ' + totalRev.toLocaleString();
+        if (statOrders) statOrders.textContent = orders.length;
       }
 
       function renderOrders() {
