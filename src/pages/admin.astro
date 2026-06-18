@@ -189,9 +189,11 @@ import '../styles/global.css';
             <div class="set">
               <form id="setForm" class="space-y-6">
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                  <div><label class="caption-mono text-accents-5 mb-2 block text-[10px]">Support Contact</label><input type="text" id="fContact" class="form-input" /></div>
-                  <div><label class="caption-mono text-accents-5 mb-2 block text-[10px]">Bkash Merchant</label><input type="text" id="fBkash" class="form-input" /></div>
-                  <div><label class="caption-mono text-accents-5 mb-2 block text-[10px]">Nagad Personal</label><input type="text" id="fNagad" class="form-input" /></div>
+                  <div><label class="caption-mono text-accents-5 mb-2 block text-[10px]">Support Contact</label><input type="text" id="fContact" class="form-input" placeholder="+8801XXXXXXXXX" /></div>
+                  <div><label class="caption-mono text-accents-5 mb-2 block text-[10px]">Bkash Merchant</label><input type="text" id="fBkash" class="form-input" placeholder="01XXXXXXXXX" /></div>
+                  <div><label class="caption-mono text-accents-5 mb-2 block text-[10px]">Nagad Personal</label><input type="text" id="fNagad" class="form-input" placeholder="01XXXXXXXXX" /></div>
+                  <div><label class="caption-mono text-accents-5 mb-2 block text-[10px]">Facebook Page Link</label><input type="url" id="fFacebook" class="form-input" placeholder="https://facebook.com/yourpage" /></div>
+                  <div><label class="caption-mono text-accents-5 mb-2 block text-[10px]">Instagram Link</label><input type="url" id="fInstagram" class="form-input" placeholder="https://instagram.com/yourpage" /></div>
                   <div><label class="caption-mono text-accents-5 mb-2 block text-[10px]">Delivery Fee — Inside CTG</label><input type="number" id="fFeeCtg" class="form-input" placeholder="70" min="0" /></div>
                   <div><label class="caption-mono text-accents-5 mb-2 block text-[10px]">Delivery Fee — Outside CTG</label><input type="number" id="fFeeOutside" class="form-input" placeholder="130" min="0" /></div>
                 </div>
@@ -278,9 +280,11 @@ import '../styles/global.css';
         if (body && method !== 'GET') options.body = JSON.stringify(body);
         return fetch(url, options).then(function(r) {
           if (!r.ok) throw new Error(r.statusText);
-          // DELETE / PATCH with return=minimal returns 204 No Content (empty body)
-          if (r.status === 204 || r.headers.get('content-length') === '0') return null;
-          return r.json();
+          // DELETE / PATCH with return=minimal can return empty body (204 or 200 with no content)
+          // Read as text first, then parse conditionally to avoid JSON parse errors on empty bodies
+          return r.text().then(function(text) {
+            return text ? JSON.parse(text) : null;
+          });
         });
       }
 
@@ -358,7 +362,7 @@ import '../styles/global.css';
 
       // ─── Data ───
       var orders = [], products = [], categories = [];
-      var settings = { contact: '', bkash: '', nagad: '', fee_ctg: 70, fee_outside: 130 };
+      var settings = { contact: '', bkash: '', nagad: '', facebook: '', instagram: '', fee_ctg: 70, fee_outside: 130 };
 
       async function load() {
         try {
@@ -377,6 +381,8 @@ import '../styles/global.css';
           document.getElementById('fContact').value = settings.contact || '';
           document.getElementById('fBkash').value = settings.bkash || '';
           document.getElementById('fNagad').value = settings.nagad || '';
+          document.getElementById('fFacebook').value = settings.facebook || '';
+          document.getElementById('fInstagram').value = settings.instagram || '';
           document.getElementById('fFeeCtg').value = settings.fee_ctg || '70';
           document.getElementById('fFeeOutside').value = settings.fee_outside || '130';
 
@@ -529,6 +535,8 @@ import '../styles/global.css';
           contact: document.getElementById('fContact').value,
           bkash: document.getElementById('fBkash').value,
           nagad: document.getElementById('fNagad').value,
+          facebook: document.getElementById('fFacebook').value,
+          instagram: document.getElementById('fInstagram').value,
           fee_ctg: Number(document.getElementById('fFeeCtg').value) || 70,
           fee_outside: Number(document.getElementById('fFeeOutside').value) || 130
         };

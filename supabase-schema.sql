@@ -42,6 +42,8 @@ CREATE TABLE IF NOT EXISTS settings (
   contact TEXT NOT NULL DEFAULT '',
   bkash TEXT NOT NULL DEFAULT '',
   nagad TEXT NOT NULL DEFAULT '',
+  facebook TEXT NOT NULL DEFAULT '',
+  instagram TEXT NOT NULL DEFAULT '',
   fee_ctg REAL NOT NULL DEFAULT 70,
   fee_outside REAL NOT NULL DEFAULT 130,
   created_at TIMESTAMPTZ DEFAULT NOW()
@@ -80,3 +82,13 @@ INSERT INTO products (name, price, image, category) VALUES
   ('Joker Heath', 'Tk 400', 'https://placehold.co/400x533/111/50e3c2?text=Joker&font=inter', 'DC'),
   ('Tanjiro Sun', 'Tk 490', 'https://placehold.co/400x533/111/50e3c2?text=Tanjiro&font=inter', 'Anime'),
   ('Darth Vader', 'Tk 650', 'https://placehold.co/400x533/111/50e3c2?text=Vader&font=inter', 'Star Wars');
+
+-- ═══════════════════════════════════════════
+-- MIGRATION: Add social link columns (run if table already exists)
+-- ═══════════════════════════════════════════
+-- Only needed if you already created the settings table without these columns.
+-- Run this in the Supabase SQL Editor after the main schema.
+/*
+ALTER TABLE settings ADD COLUMN facebook TEXT NOT NULL DEFAULT '';
+ALTER TABLE settings ADD COLUMN instagram TEXT NOT NULL DEFAULT '';
+*/
