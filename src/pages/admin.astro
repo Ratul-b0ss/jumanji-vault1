@@ -411,6 +411,10 @@ import '../styles/global.css';
                     <label class="caption-mono text-accents-5 mb-2 block text-[10px]">Nagad Personal</label>
                     <input type="text" id="setNagad" class="form-input" />
                   </div>
+                  <div>
+                    <label class="caption-mono text-accents-5 mb-2 block text-[10px]">Delivery Fee (Tk)</label>
+                    <input type="number" min="0" step="1" id="setDeliveryFee" class="form-input" placeholder="0" />
+                  </div>
                 </div>
                 <div class="pt-4">
                   <button type="submit" class="btn-primary !h-10 px-8 text-sm">Save Configuration</button>
@@ -562,7 +566,7 @@ import '../styles/global.css';
       let orders = [];
       let products = [];
       let categories = [];
-      let settings = { contact: '', bkash: '', nagad: '' };
+      let settings = { contact: '', bkash: '', nagad: '', deliveryFee: '0' };
 
       const defaultProducts = [
         { name: 'Iron Man Mk 85', price: 'Tk 450', image: 'https://placehold.co/400x533/111/50e3c2?text=Iron+Man&font=inter', category: 'Marvel' },
@@ -585,7 +589,7 @@ import '../styles/global.css';
           orders = JSON.parse(localStorage.getItem('jv_orders') || '[]');
           products = JSON.parse(localStorage.getItem('jv_products') || JSON.stringify(defaultProducts));
           categories = JSON.parse(localStorage.getItem('jv_categories') || JSON.stringify(defaultCategories));
-          settings = JSON.parse(localStorage.getItem('jv_settings') || JSON.stringify({ contact: '', bkash: '', nagad: '' }));
+          settings = JSON.parse(localStorage.getItem('jv_settings') || JSON.stringify({ contact: '', bkash: '', nagad: '', deliveryFee: '0' }));
           
           if (!localStorage.getItem('jv_products')) localStorage.setItem('jv_products', JSON.stringify(defaultProducts));
           if (!localStorage.getItem('jv_categories')) localStorage.setItem('jv_categories', JSON.stringify(defaultCategories));
@@ -593,6 +597,7 @@ import '../styles/global.css';
           document.getElementById('setContact').value = settings.contact || '';
           document.getElementById('setBkash').value = settings.bkash || '';
           document.getElementById('setNagad').value = settings.nagad || '';
+          document.getElementById('setDeliveryFee').value = settings.deliveryFee || '0';
         } catch (e) { console.error(e); }
       }
 
@@ -715,7 +720,8 @@ import '../styles/global.css';
         settings = {
           contact: document.getElementById('setContact').value,
           bkash: document.getElementById('setBkash').value,
-          nagad: document.getElementById('setNagad').value
+          nagad: document.getElementById('setNagad').value,
+          deliveryFee: document.getElementById('setDeliveryFee').value || '0'
         };
         saveData();
         alert('Settings Saved');

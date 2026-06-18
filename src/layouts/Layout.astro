@@ -61,6 +61,7 @@ const { title = defaultTitle } = Astro.props;
         </div>
         <div id="drawerContent" class="flex-1 overflow-y-auto p-6 scroll-smooth"></div>
         <div id="drawerFooter" class="p-6 border-t border-accents-2 bg-ds-background-200 hidden">
+          <div id="drawerSummary" class="mb-4"></div>
           <div class="flex items-center justify-between mb-6">
             <span class="text-accents-5 font-medium">Estimated Total</span>
             <span id="drawerTotal" class="display-sm text-cyan"></span>
@@ -175,6 +176,14 @@ const { title = defaultTitle } = Astro.props;
         }, 400);
       };
 
+      function getDeliveryFee() {
+        var settings = {};
+        try {
+          settings = JSON.parse(localStorage.getItem('jv_settings') || '{}');
+        } catch (e) { settings = {}; }
+        return Number(settings.deliveryFee || 0) || 0;
+      }
+
       function renderDrawer() {
         var content = document.getElementById('drawerContent');
         var footer = document.getElementById('drawerFooter');
@@ -185,22 +194,55 @@ const { title = defaultTitle } = Astro.props;
           return;
         }
         if (footer) footer.classList.remove('hidden');
+
         var total = 0;
+        var fee = getDeliveryFee();
         content.innerHTML = window.cart.map((item, i) => {
           var p = parseInt(item.price.replace(/[^0-9]/g, '')) || 0;
           total += p * item.qty;
-          return `<div class="flex items-center gap-4 mb-6">
-            <img src="${item.image}" class="w-16 h-16 object-contain bg-accents-1 rounded" />
-            <div class="flex-1">
-              <p class="text-xs font-medium text-white">${item.name}</p>
-              <p class="text-[10px] text-accents-5">${item.price} x ${item.qty}</p>
+          return `<div class="flex flex-col gap-4 mb-6 border-b border-accents-2 pb-4 last:border-b-0 last:pb-0">
+            <div class="flex items-start gap-4">
+              <img src="${item.image}" class="w-16 h-16 object-contain bg-accents-1 rounded" />
+              <div class="flex-1">
+                <p class="text-xs font-medium text-white">${item.name}</p>
+                <p class="text-[10px] text-accents-5">${item.price} each</p>
+              </div>
+              <button onclick="window.removeItem(${i})" class="text-error text-[10px]">Remove</button>
             </div>
-            <button onclick="window.removeItem(${i})" class="text-error text-[10px]">Remove</button>
+            <div class="flex items-center justify-between gap-3 text-[10px] text-accents-5">
+              <div class="flex items-center gap-2">
+                <button onclick="window.changeQty(${i}, -1)" class="px-2 py-1 bg-accents-1 rounded text-white">-</button>
+                <span class="font-bold text-white">${item.qty}</span>
+                <button onclick="window.changeQty(${i}, 1)" class="px-2 py-1 bg-accents-1 rounded text-white">+</button>
+              </div>
+              <span class="font-medium text-white">Tk ${(p * item.qty).toLocaleString()}</span>
+            </div>
           </div>`;
         }).join('');
+
         var dt = document.getElementById('drawerTotal');
-        if (dt) dt.textContent = 'Tk ' + total.toLocaleString();
+        if (dt) dt.textContent = 'Tk ' + (total + fee).toLocaleString();
+
+        var summary = document.getElementById('drawerSummary');
+        if (summary) {
+          summary.innerHTML = `<div class="flex items-center justify-between text-[11px] text-accents-5 mb-2">
+              <span>Items total</span><span>Tk ${total.toLocaleString()}</span>
+            </div>
+            <div class="flex items-center justify-between text-[11px] text-accents-5 mb-4">
+              <span>Delivery fee</span><span>Tk ${fee.toLocaleString()}</span>
+            </div>`;
+        }
       }
+
+      window.changeQty = function(i, delta) {
+        if (!window.cart[i]) return;
+        window.cart[i].qty = Math.max(0, (window.cart[i].qty || 1) + delta);
+        if (window.cart[i].qty === 0) {
+          window.cart.splice(i, 1);
+        }
+        window.saveCart();
+        renderDrawer();
+      };
 
       window.removeItem = function(i) {
         window.cart.splice(i, 1);
