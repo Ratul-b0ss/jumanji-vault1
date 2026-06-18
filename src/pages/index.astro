@@ -51,6 +51,27 @@ import Layout from '../layouts/Layout.astro';
     </div>
   </section>
 
+  <!-- ── Footer ── -->
+  <footer class="border-t border-accents-2 bg-black py-12">
+    <div class="container flex flex-col md:flex-row justify-between items-center gap-6">
+      <div class="flex items-center gap-2">
+        <span class="caption-mono text-cyan font-bold tracking-tighter">BRICK</span>
+        <span class="caption-mono text-white font-bold tracking-tighter">RUSH</span>
+      </div>
+      
+      <div class="text-accents-5 text-[10px] caption-mono tracking-widest">
+        &copy; 2024 ALL RIGHTS RESERVED
+      </div>
+
+      <div class="flex items-center gap-6">
+        <a href="/admin" class="text-accents-5 hover:text-cyan transition-colors text-[10px] caption-mono tracking-widest flex items-center gap-2">
+          <span class="w-1.5 h-1.5 rounded-full bg-accents-3"></span>
+          Access Terminal
+        </a>
+      </div>
+    </div>
+  </footer>
+
 </Layout>
 
 <style>
@@ -80,6 +101,10 @@ import Layout from '../layouts/Layout.astro';
     { name: 'Luffy Gear 5', price: 'Tk 550', image: 'https://placehold.co/400x533/111/50e3c2?text=Luffy&font=inter', category: 'One Piece' },
     { name: 'Mandalorian', price: 'Tk 600', image: 'https://placehold.co/400x533/111/50e3c2?text=Mando&font=inter', category: 'Star Wars' },
     { name: 'Naruto Baryon', price: 'Tk 520', image: 'https://placehold.co/400x533/111/50e3c2?text=Naruto&font=inter', category: 'Anime' },
+    { name: 'Wolverine Logan', price: 'Tk 460', image: 'https://placehold.co/400x533/111/50e3c2?text=Wolverine&font=inter', category: 'Marvel' },
+    { name: 'Joker Heath', price: 'Tk 400', image: 'https://placehold.co/400x533/111/50e3c2?text=Joker&font=inter', category: 'DC' },
+    { name: 'Tanjiro Sun', price: 'Tk 490', image: 'https://placehold.co/400x533/111/50e3c2?text=Tanjiro&font=inter', category: 'Anime' },
+    { name: 'Darth Vader', price: 'Tk 650', image: 'https://placehold.co/400x533/111/50e3c2?text=Vader&font=inter', category: 'Star Wars' },
   ];
 
   var currentCategory = 'All';

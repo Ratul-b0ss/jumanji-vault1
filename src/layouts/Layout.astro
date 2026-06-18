@@ -31,15 +31,7 @@ const { title = defaultTitle } = Astro.props;
           <span class="caption-mono text-white font-bold tracking-tighter">RUSH</span>
         </a>
         
-        <nav class="hidden md:flex items-center gap-1">
-          <a href="/" class="nav-link active">Store</a>
-          <a href="/" class="nav-link">Marvel</a>
-          <a href="/" class="nav-link">DC</a>
-          <a href="/" class="nav-link">Anime</a>
-        </nav>
-
         <div class="flex items-center gap-2 sm:gap-3">
-          <a href="/admin" class="nav-link hidden sm:block">Admin</a>
           <button id="navCartBtn" class="nav-link flex items-center gap-2" type="button">
             <span class="hidden sm:inline">Cart</span>
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="sm:hidden">
@@ -47,29 +39,9 @@ const { title = defaultTitle } = Astro.props;
             </svg>
             <span id="navCartCount" class="text-cyan font-bold">(0)</span>
           </button>
-          <button id="mobileMenuToggle" class="nav-link md:hidden flex items-center justify-center p-2" type="button">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M3 12h18M3 6h18M3 18h18" />
-            </svg>
-          </button>
         </div>
       </div>
     </header>
-
-    <!-- ── Mobile Menu Overlay ── -->
-    <div id="mobileMenu" class="fixed inset-0 z-[1500] bg-black translate-x-full transition-transform duration-500 ease-expo flex flex-col p-8 md:hidden">
-      <div class="flex items-center justify-between mb-12">
-        <span class="caption-mono text-cyan font-bold">Menu</span>
-        <button id="closeMobileMenu" class="text-3xl text-accents-5">&times;</button>
-      </div>
-      <nav class="flex flex-col gap-8">
-        <a href="/" class="display-lg text-white no-underline">Store</a>
-        <a href="/" class="display-lg text-white no-underline">Marvel</a>
-        <a href="/" class="display-lg text-white no-underline">DC</a>
-        <a href="/" class="display-lg text-white no-underline">Anime</a>
-        <a href="/admin" class="display-lg text-cyan no-underline">Admin Dashboard</a>
-      </nav>
-    </div>
 
     <!-- ── Sticky Cart Trigger ── -->
     <button id="stickyCart" class="sticky-cart" type="button">
@@ -276,10 +248,6 @@ const { title = defaultTitle } = Astro.props;
         location.reload();
         alert('Order Placed! ID: ' + order.id);
       };
-
-      // ─── Mobile Menu ───
-      document.getElementById('mobileMenuToggle').onclick = () => toggleClass('mobileMenu', 'translate-x-full', false);
-      document.getElementById('closeMobileMenu').onclick = () => toggleClass('mobileMenu', 'translate-x-full', true);
 
       window.updateUI();
 
