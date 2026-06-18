@@ -297,7 +297,7 @@ import Layout from '../layouts/Layout.astro';
   document.addEventListener('click', function(e) {
     var overlay = document.getElementById('zoomOverlay');
     var close = document.getElementById('zoomClose');
-    if (!overlay) return;
+    if (!overlay || !close) return;
     if (e.target === overlay || e.target === close || close.contains(e.target)) {
       overlay.classList.add('opacity-0');
       setTimeout(function() {
