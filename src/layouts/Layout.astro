@@ -23,14 +23,12 @@ const { title = defaultTitle } = Astro.props;
     <title>{title || defaultTitle}</title>
   </head>
   <body>
-    <!-- ── Header Navigation ── -->
     <header class="nav-bar">
       <div class="container flex items-center justify-between w-full h-full">
         <a href="/" class="flex items-center gap-2 group">
           <span class="caption-mono text-cyan font-bold tracking-tighter">BRICK</span>
           <span class="caption-mono text-white font-bold tracking-tighter">RUSH</span>
         </a>
-        
         <div class="flex items-center gap-2 sm:gap-3">
           <button id="navCartBtn" class="nav-link flex items-center gap-2" type="button">
             <span class="hidden sm:inline">Cart</span>
@@ -43,7 +41,6 @@ const { title = defaultTitle } = Astro.props;
       </div>
     </header>
 
-    <!-- ── Sticky Cart Trigger ── -->
     <button id="stickyCart" class="sticky-cart" type="button">
       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
         <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4zM3 6h18M16 10a4 4 0 01-8 0" />
@@ -51,7 +48,6 @@ const { title = defaultTitle } = Astro.props;
       <span id="cartBadge" class="cart-badge hidden">0</span>
     </button>
 
-    <!-- ── Cart Drawer ── -->
     <div id="cartOverlay" class="drawer-overlay hidden opacity-0 transition-opacity duration-300"></div>
     <div id="cartDrawer" class="drawer translate-x-full">
       <div class="flex flex-col h-full">
@@ -71,7 +67,6 @@ const { title = defaultTitle } = Astro.props;
       </div>
     </div>
 
-    <!-- ── Checkout Modal ── -->
     <div id="checkoutModal" class="modal-overlay hidden opacity-0 transition-opacity duration-300">
       <div class="modal-content card max-w-lg w-full relative">
         <button id="closeCheckout" class="absolute top-6 right-6 text-3xl text-accents-5 hover:text-white">&times;</button>
@@ -80,8 +75,6 @@ const { title = defaultTitle } = Astro.props;
         <p class="body-sm text-accents-5 mb-6">Review your order and complete details below.</p>
 
         <form id="checkoutForm" class="space-y-6">
-          
-          <!-- ── Order Summary ── -->
           <div class="p-4 bg-accents-1 border border-accents-2 rounded-lg">
             <h3 class="caption-mono text-[10px] text-cyan font-bold tracking-wider mb-3">Order Summary</h3>
             <div id="checkoutItems" class="space-y-2 mb-3"></div>
@@ -99,18 +92,16 @@ const { title = defaultTitle } = Astro.props;
             </div>
           </div>
 
-          <!-- ── Delivery Zone ── -->
           <div>
             <label class="caption-mono text-accents-5 mb-2 block text-[10px]">Delivery Zone</label>
             <select id="deliveryZone" class="form-input" required>
               <option value="">Select Zone</option>
-              <option value="ctg">Inside Chittagong — 70 Tk</option>
-              <option value="outside">Outside Chittagong — 130 Tk</option>
+              <option value="ctg">Inside Chittagong</option>
+              <option value="outside">Outside Chittagong</option>
             </select>
             <div id="zoneInfo" class="mt-2 text-[11px] text-accents-4 hidden"></div>
           </div>
 
-          <!-- ── Customer Info ── -->
           <div>
             <h3 class="caption-mono text-[10px] text-white font-bold tracking-wider mb-3">Customer Information</h3>
             <div class="grid grid-cols-1 gap-3">
@@ -120,7 +111,6 @@ const { title = defaultTitle } = Astro.props;
             </div>
           </div>
 
-          <!-- ── Outside CTG: Payment Method ── -->
           <div id="outsidePayment" class="hidden">
             <h3 class="caption-mono text-[10px] text-white font-bold tracking-wider mb-3">Payment Method (Advance)</h3>
             <div class="space-y-3">
@@ -134,7 +124,6 @@ const { title = defaultTitle } = Astro.props;
             </div>
           </div>
 
-          <!-- ── Inside CTG: COD Info ── -->
           <div id="insideCOD" class="hidden p-3 bg-green-500/5 border border-green-500/20 rounded-sm">
             <p class="text-xs text-accents-6">✅ <strong class="text-white">Cash on Delivery</strong></p>
           </div>
@@ -147,11 +136,25 @@ const { title = defaultTitle } = Astro.props;
     <main><slot /></main>
 
     <script is:inline>
+      // ─── Supabase Config ───
+      var SUPABASE_URL = 'https://bpgdniisgxzgrrcqlnwp.supabase.co';
+      var SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJwZ2RuaWlzZ3h6Z3JyY3FsbndwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE3NjU2ODIsImV4cCI6MjA5NzM0MTY4Mn0.krm-gAAveC4y8bBIwEMFTggXSDzn4Ypj_r5UjoJ5uuk';
+
+      function supabaseFetch(path, options) {
+        return fetch(SUPABASE_URL + '/rest/v1/' + path, {
+          headers: {
+            'apikey': SUPABASE_ANON_KEY,
+            'Authorization': 'Bearer ' + SUPABASE_ANON_KEY,
+            'Content-Type': 'application/json',
+            ...(options?.headers || {})
+          },
+          ...options
+        });
+      }
+
       // ─── Global State & Storage ───
       window.cart = [];
-      try {
-        window.cart = JSON.parse(localStorage.getItem('jv_cart') || '[]');
-      } catch (e) { window.cart = []; }
+      try { window.cart = JSON.parse(localStorage.getItem('jv_cart') || '[]'); } catch (e) {}
 
       window.saveCart = function() {
         localStorage.setItem('jv_cart', JSON.stringify(window.cart));
@@ -159,39 +162,34 @@ const { title = defaultTitle } = Astro.props;
       };
 
       window.updateUI = function() {
-        var count = window.cart.reduce((s, i) => s + (i.qty || 0), 0);
+        var count = window.cart.reduce(function(s, i) { return s + (i.qty || 0); }, 0);
         var navCount = document.getElementById('navCartCount');
         if (navCount) navCount.textContent = '(' + count + ')';
         var badge = document.getElementById('cartBadge');
         if (badge) {
-          if (count > 0) {
-            badge.textContent = count;
-            badge.classList.remove('hidden');
-          } else {
-            badge.classList.add('hidden');
-          }
+          if (count > 0) { badge.textContent = count; badge.classList.remove('hidden'); }
+          else { badge.classList.add('hidden'); }
         }
       };
 
       window.addToCart = function(product) {
         if (!product || !product.name) return;
-        var existing = window.cart.find(i => i.name === product.name);
+        var existing = window.cart.find(function(i) { return i.name === product.name; });
         if (existing) existing.qty++;
         else window.cart.push({ ...product, qty: 1 });
         window.saveCart();
       };
 
-      // ─── UI Helpers ───
       function toggleClass(id, cls, force) {
         var el = document.getElementById(id);
         if (el) el.classList.toggle(cls, force);
       }
 
-      // ─── Drawer & Modal Logic ───
+      // ─── Drawer ───
       window.openDrawer = function() {
         renderDrawer();
         toggleClass('cartOverlay', 'hidden', false);
-        setTimeout(() => toggleClass('cartOverlay', 'opacity-0', false), 10);
+        setTimeout(function() { toggleClass('cartOverlay', 'opacity-0', false); }, 10);
         toggleClass('cartDrawer', 'translate-x-full', false);
         document.body.classList.add('modal-open');
       };
@@ -199,13 +197,11 @@ const { title = defaultTitle } = Astro.props;
       window.closeDrawer = function() {
         toggleClass('cartDrawer', 'translate-x-full', true);
         toggleClass('cartOverlay', 'opacity-0', true);
-        setTimeout(() => {
+        setTimeout(function() {
           toggleClass('cartOverlay', 'hidden', true);
           document.body.classList.remove('modal-open');
         }, 400);
       };
-
-      // No more configurable delivery fee — zone-based fees now handled in checkout
 
       function renderDrawer() {
         var content = document.getElementById('drawerContent');
@@ -219,27 +215,23 @@ const { title = defaultTitle } = Astro.props;
         if (footer) footer.classList.remove('hidden');
 
         var total = 0;
-        content.innerHTML = window.cart.map((item, i) => {
+        content.innerHTML = window.cart.map(function(item, i) {
           var p = parseInt(item.price.replace(/[^0-9]/g, '')) || 0;
           total += p * item.qty;
-          return `<div class="flex flex-col gap-4 mb-6 border-b border-accents-2 pb-4 last:border-b-0 last:pb-0">
-            <div class="flex items-start gap-4">
-              <img src="${item.image}" class="w-16 h-16 object-contain bg-accents-1 rounded" />
-              <div class="flex-1">
-                <p class="text-xs font-medium text-white">${item.name}</p>
-                <p class="text-[10px] text-accents-5">${item.price} each</p>
-              </div>
-              <button onclick="window.removeItem(${i})" class="text-error text-[10px]">Remove</button>
-            </div>
-            <div class="flex items-center justify-between gap-3 text-[10px] text-accents-5">
-              <div class="flex items-center gap-2">
-                <button onclick="window.changeQty(${i}, -1)" class="px-2 py-1 bg-accents-1 rounded text-white">-</button>
-                <span class="font-bold text-white">${item.qty}</span>
-                <button onclick="window.changeQty(${i}, 1)" class="px-2 py-1 bg-accents-1 rounded text-white">+</button>
-              </div>
-              <span class="font-medium text-white">Tk ${(p * item.qty).toLocaleString()}</span>
-            </div>
-          </div>`;
+          return '<div class="flex flex-col gap-4 mb-6 border-b border-accents-2 pb-4 last:border-b-0 last:pb-0">' +
+            '<div class="flex items-start gap-4">' +
+              '<img src="' + item.image + '" class="w-16 h-16 object-contain bg-accents-1 rounded" />' +
+              '<div class="flex-1"><p class="text-xs font-medium text-white">' + item.name + '</p><p class="text-[10px] text-accents-5">' + item.price + ' each</p></div>' +
+              '<button onclick="window.removeItem(' + i + ')" class="text-error text-[10px]">Remove</button>' +
+            '</div>' +
+            '<div class="flex items-center justify-between gap-3 text-[10px] text-accents-5">' +
+              '<div class="flex items-center gap-2">' +
+                '<button onclick="window.changeQty(' + i + ', -1)" class="px-2 py-1 bg-accents-1 rounded text-white">-</button>' +
+                '<span class="font-bold text-white">' + item.qty + '</span>' +
+                '<button onclick="window.changeQty(' + i + ', 1)" class="px-2 py-1 bg-accents-1 rounded text-white">+</button>' +
+              '</div>' +
+              '<span class="font-medium text-white">Tk ' + (p * item.qty).toLocaleString() + '</span>' +
+            '</div></div>';
         }).join('');
 
         var dt = document.getElementById('drawerTotal');
@@ -247,18 +239,14 @@ const { title = defaultTitle } = Astro.props;
 
         var summary = document.getElementById('drawerSummary');
         if (summary) {
-          summary.innerHTML = `<div class="flex items-center justify-between text-[11px] text-accents-5">
-              <span>Items total</span><span>Tk ${total.toLocaleString()}</span>
-            </div>`;
+          summary.innerHTML = '<div class="flex items-center justify-between text-[11px] text-accents-5"><span>Items total</span><span>Tk ' + total.toLocaleString() + '</span></div>';
         }
       }
 
       window.changeQty = function(i, delta) {
         if (!window.cart[i]) return;
         window.cart[i].qty = Math.max(0, (window.cart[i].qty || 1) + delta);
-        if (window.cart[i].qty === 0) {
-          window.cart.splice(i, 1);
-        }
+        if (window.cart[i].qty === 0) window.cart.splice(i, 1);
         window.saveCart();
         renderDrawer();
       };
@@ -269,11 +257,36 @@ const { title = defaultTitle } = Astro.props;
         renderDrawer();
       };
 
-      // ─── Events ───
       document.getElementById('navCartBtn').onclick = window.openDrawer;
       document.getElementById('stickyCart').onclick = window.openDrawer;
       document.getElementById('closeDrawer').onclick = window.closeDrawer;
       document.getElementById('cartOverlay').onclick = window.closeDrawer;
+
+      // ─── Settings (loaded from Supabase) ───
+      var _settings = { fee_ctg: 70, fee_outside: 130, contact: '', bkash: '', nagad: '' };
+
+      // Try cached settings from localStorage for instant UI
+      try {
+        var cached = localStorage.getItem('jv_settings_cache');
+        if (cached) _settings = JSON.parse(cached);
+      } catch(e) {}
+
+      // Fetch settings from Supabase
+      supabaseFetch('settings?select=*&limit=1')
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+          if (data && data.length > 0) {
+            _settings = data[0];
+            localStorage.setItem('jv_settings_cache', JSON.stringify(_settings));
+          }
+        })
+        .catch(function() {});
+
+      function getDeliveryFee(zone) {
+        if (zone === 'ctg') return Number(_settings.fee_ctg) || 70;
+        if (zone === 'outside') return Number(_settings.fee_outside) || 130;
+        return 0;
+      }
 
       // ─── Checkout UI Logic ───
       function renderCheckoutSummary() {
@@ -288,17 +301,6 @@ const { title = defaultTitle } = Astro.props;
         }).join('');
         if (subEl) subEl.textContent = 'Tk ' + total.toLocaleString();
         updateCheckoutTotal();
-      }
-
-      function getSettings() {
-        try { return JSON.parse(localStorage.getItem('jv_settings') || '{}'); } catch(e) { return {}; }
-      }
-
-      function getDeliveryFee(zone) {
-        var s = getSettings();
-        if (zone === 'ctg') return Number(s.feeCtg) || 70;
-        if (zone === 'outside') return Number(s.feeOutside) || 130;
-        return 0;
       }
 
       function updateCheckoutTotal() {
@@ -317,7 +319,6 @@ const { title = defaultTitle } = Astro.props;
           if (totalEl) totalEl.textContent = 'Tk ' + subtotal.toLocaleString();
         }
 
-        // Show zone info
         var zoneInfo = document.getElementById('zoneInfo');
         var feeCtg = getDeliveryFee('ctg');
         var feeOut = getDeliveryFee('outside');
@@ -331,7 +332,6 @@ const { title = defaultTitle } = Astro.props;
           zoneInfo.classList.add('hidden');
         }
 
-        // Toggle payment sections
         var outsidePay = document.getElementById('outsidePayment');
         var insideCod = document.getElementById('insideCOD');
         if (zone === 'outside') {
@@ -351,24 +351,18 @@ const { title = defaultTitle } = Astro.props;
         var method = document.getElementById('payMethod').value;
         var inst = document.getElementById('payInstructions');
         if (!inst) return;
-        var settings = getSettings();
         var feeOut = getDeliveryFee('outside');
         if (method === 'bkash') {
-          inst.innerHTML = 'Send <strong class="text-white">Tk ' + feeOut + '</strong> to Bkash Merchant: <strong class="text-cyan">' + (settings.bkash || 'Not set') + '</strong>. Then enter the TrxID below.';
+          inst.innerHTML = 'Send <strong class="text-white">Tk ' + feeOut + '</strong> to Bkash Merchant: <strong class="text-cyan">' + (_settings.bkash || 'Not set') + '</strong>. Then enter the TrxID below.';
         } else if (method === 'nagad') {
-          inst.innerHTML = 'Send <strong class="text-white">Tk ' + feeOut + '</strong> to Nagad Personal: <strong class="text-cyan">' + (settings.nagad || 'Not set') + '</strong>. Then enter the TrxID below.';
+          inst.innerHTML = 'Send <strong class="text-white">Tk ' + feeOut + '</strong> to Nagad Personal: <strong class="text-cyan">' + (_settings.nagad || 'Not set') + '</strong>. Then enter the TrxID below.';
         } else {
           inst.innerHTML = 'Select a payment method above to see instructions.';
         }
       }
 
-      document.getElementById('deliveryZone').onchange = function() {
-        updateCheckoutTotal();
-      };
-
-      document.getElementById('payMethod').onchange = function() {
-        updatePayInstructions();
-      };
+      document.getElementById('deliveryZone').onchange = function() { updateCheckoutTotal(); };
+      document.getElementById('payMethod').onchange = function() { updatePayInstructions(); };
 
       document.getElementById('checkoutBtn').onclick = function() {
         window.closeDrawer();
@@ -393,7 +387,8 @@ const { title = defaultTitle } = Astro.props;
         setTimeout(function() { toggleClass('checkoutModal', 'hidden', true); }, 300);
       };
 
-      document.getElementById('checkoutForm').onsubmit = function(e) {
+      // ─── Submit Order to Supabase ───
+      document.getElementById('checkoutForm').onsubmit = async function(e) {
         e.preventDefault();
         var zone = document.getElementById('deliveryZone').value;
         var subtotal = window.cart.reduce(function(s, i) { return s + (parseInt(i.price.replace(/[^0-9]/g, '')) * i.qty); }, 0);
@@ -402,39 +397,45 @@ const { title = defaultTitle } = Astro.props;
         
         var paymentMethod = '';
         var trxId = '';
-        if (zone === 'ctg') {
-          paymentMethod = 'cod';
-        } else if (zone === 'outside') {
+        if (zone === 'ctg') { paymentMethod = 'cod'; }
+        else if (zone === 'outside') {
           paymentMethod = document.getElementById('payMethod').value;
           trxId = document.getElementById('trxId').value || 'N/A';
         }
 
+        var orderId = Math.random().toString(36).slice(2, 9).toUpperCase();
         var order = {
-          id: Math.random().toString(36).slice(2, 9).toUpperCase(),
-          items: JSON.parse(JSON.stringify(window.cart)),
+          id: orderId,
+          items_json: JSON.parse(JSON.stringify(window.cart)),
           subtotal: subtotal,
-          deliveryFee: deliveryFee,
+          delivery_fee: deliveryFee,
           total: grandTotal,
           zone: zone,
-          customer: {
-            name: document.getElementById('custName').value,
-            phone: document.getElementById('custPhone').value,
-            address: document.getElementById('custAddress').value,
-          },
-          payment: {
-            method: paymentMethod,
-            trxId: trxId
-          },
-          status: 'pending',
-          date: new Date().toISOString()
+          customer_name: document.getElementById('custName').value,
+          customer_phone: document.getElementById('custPhone').value,
+          customer_address: document.getElementById('custAddress').value,
+          payment_method: paymentMethod,
+          payment_trxid: trxId,
+          status: 'pending'
         };
+
+        try {
+          var res = await supabaseFetch('orders', {
+            method: 'POST',
+            headers: { 'Prefer': 'return=minimal' },
+            body: JSON.stringify(order)
+          });
+          if (!res.ok) throw new Error('Failed');
+        } catch(err) {
+          // Fallback to localStorage if Supabase fails
+          var orders = JSON.parse(localStorage.getItem('jv_orders') || '[]');
+          orders.unshift(order);
+          localStorage.setItem('jv_orders', JSON.stringify(orders));
+        }
         
-        var orders = JSON.parse(localStorage.getItem('jv_orders') || '[]');
-        orders.unshift(order);
-        localStorage.setItem('jv_orders', JSON.stringify(orders));
         window.cart = [];
         window.saveCart();
-        alert('Order Placed! ID: ' + order.id);
+        alert('Order Placed! ID: ' + orderId);
         location.reload();
       };
 
