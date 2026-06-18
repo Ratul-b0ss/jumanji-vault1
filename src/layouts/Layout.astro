@@ -63,7 +63,7 @@ const { title = defaultTitle } = Astro.props;
         <div id="drawerFooter" class="p-6 border-t border-accents-2 bg-ds-background-200 hidden">
           <div id="drawerSummary" class="mb-4"></div>
           <div class="flex items-center justify-between mb-6">
-            <span class="text-accents-5 font-medium">Estimated Total</span>
+            <span class="text-accents-5 font-medium">Subtotal</span>
             <span id="drawerTotal" class="display-sm text-cyan"></span>
           </div>
           <button id="checkoutBtn" class="btn-primary w-full">Proceed to Checkout</button>
@@ -75,42 +75,71 @@ const { title = defaultTitle } = Astro.props;
     <div id="checkoutModal" class="modal-overlay hidden opacity-0 transition-opacity duration-300">
       <div class="modal-content card max-w-lg w-full relative">
         <button id="closeCheckout" class="absolute top-6 right-6 text-3xl text-accents-5 hover:text-white">&times;</button>
-        <div class="mb-8">
-          <h2 class="display-md mb-2">Checkout</h2>
-          <p class="body-sm text-accents-5">Complete your order details below.</p>
-        </div>
+        
+        <h2 class="display-md mb-2">Checkout</h2>
+        <p class="body-sm text-accents-5 mb-6">Review your order and complete details below.</p>
+
         <form id="checkoutForm" class="space-y-6">
-          <div id="paymentInstructions" class="p-4 bg-cyan/5 border border-cyan/20 rounded-sm mb-6 hidden">
-            <h3 class="caption-mono text-cyan text-[10px] uppercase mb-3 tracking-wider">Payment Instructions</h3>
-            <div class="space-y-2">
-              <p id="paymentText" class="text-xs text-accents-7 mb-3"></p>
-              <div class="flex justify-between items-center border-t border-cyan/10 pt-2">
-                <span class="text-[10px] text-accents-5 uppercase">Support</span>
-                <span id="dispContact" class="text-xs font-bold text-cyan">Not Set</span>
-              </div>
+          
+          <!-- ── Order Summary ── -->
+          <div class="p-4 bg-accents-1 border border-accents-2 rounded-lg">
+            <h3 class="caption-mono text-[10px] text-cyan font-bold tracking-wider mb-3">Order Summary</h3>
+            <div id="checkoutItems" class="space-y-2 mb-3"></div>
+            <div id="checkoutSubtotal" class="flex items-center justify-between text-xs text-accents-5 pt-3 border-t border-accents-2">
+              <span>Subtotal</span>
+              <span id="checkoutSubtotalVal" class="text-white font-bold"></span>
+            </div>
+            <div id="checkoutDeliveryRow" class="flex items-center justify-between text-xs text-accents-5 mt-2">
+              <span>Delivery Fee</span>
+              <span id="checkoutDeliveryVal" class="text-white font-bold">Select zone</span>
+            </div>
+            <div class="flex items-center justify-between text-sm mt-3 pt-3 border-t border-accents-2">
+              <span class="font-bold text-white">Total</span>
+              <span id="checkoutTotalVal" class="text-cyan font-bold"></span>
             </div>
           </div>
 
-          <div class="grid grid-cols-1 gap-4">
-            <input type="text" id="custName" class="form-input" required placeholder="Full Name" />
-            <input type="tel" id="custPhone" class="form-input" required placeholder="Phone Number" />
-            <textarea id="custAddress" class="form-textarea" required placeholder="Delivery Address"></textarea>
-            
-            <div>
-              <label class="caption-mono text-accents-5 mb-2 block text-[10px]">Payment Method</label>
-              <select id="payMethod" class="form-input" required>
-                <option value="cod">Cash on Delivery</option>
-                <option value="bkash">Bkash (Send Money First)</option>
-                <option value="nagad">Nagad (Send Money First)</option>
+          <!-- ── Delivery Zone ── -->
+          <div>
+            <label class="caption-mono text-accents-5 mb-2 block text-[10px]">Delivery Zone</label>
+            <select id="deliveryZone" class="form-input" required>
+              <option value="">Select Zone</option>
+              <option value="ctg">Inside Chittagong — 70 Tk</option>
+              <option value="outside">Outside Chittagong — 130 Tk</option>
+            </select>
+            <div id="zoneInfo" class="mt-2 text-[11px] text-accents-4 hidden"></div>
+          </div>
+
+          <!-- ── Customer Info ── -->
+          <div>
+            <h3 class="caption-mono text-[10px] text-white font-bold tracking-wider mb-3">Customer Information</h3>
+            <div class="grid grid-cols-1 gap-3">
+              <input type="text" id="custName" class="form-input" required placeholder="Full Name" />
+              <input type="tel" id="custPhone" class="form-input" required placeholder="Phone Number" />
+              <textarea id="custAddress" class="form-textarea" required placeholder="Delivery Address"></textarea>
+            </div>
+          </div>
+
+          <!-- ── Outside CTG: Payment Method ── -->
+          <div id="outsidePayment" class="hidden">
+            <h3 class="caption-mono text-[10px] text-white font-bold tracking-wider mb-3">Payment Method (Advance)</h3>
+            <div class="space-y-3">
+              <div id="payInstructions" class="p-3 bg-cyan/5 border border-cyan/20 rounded-sm text-xs text-accents-6"></div>
+              <select id="payMethod" class="form-input">
+                <option value="">Select Payment Method</option>
+                <option value="bkash">Bkash</option>
+                <option value="nagad">Nagad</option>
               </select>
-            </div>
-
-            <div id="trxContainer" class="hidden">
-              <label class="caption-mono text-accents-5 mb-2 block text-[10px]">Transaction ID (TrxID)</label>
-              <input type="text" id="trxId" class="form-input" placeholder="8X7Y6Z..." />
+              <input type="text" id="trxId" class="form-input" placeholder="Transaction ID (TrxID)" />
             </div>
           </div>
-          <button type="submit" class="btn-primary w-full mt-4">Place Order Now</button>
+
+          <!-- ── Inside CTG: COD Info ── -->
+          <div id="insideCOD" class="hidden p-3 bg-green-500/5 border border-green-500/20 rounded-sm">
+            <p class="text-xs text-accents-6">✅ <strong class="text-white">Cash on Delivery</strong></p>
+          </div>
+
+          <button type="submit" class="btn-primary w-full mt-2">Place Order Now</button>
         </form>
       </div>
     </div>
@@ -176,13 +205,7 @@ const { title = defaultTitle } = Astro.props;
         }, 400);
       };
 
-      function getDeliveryFee() {
-        var settings = {};
-        try {
-          settings = JSON.parse(localStorage.getItem('jv_settings') || '{}');
-        } catch (e) { settings = {}; }
-        return Number(settings.deliveryFee || 0) || 0;
-      }
+      // No more configurable delivery fee — zone-based fees now handled in checkout
 
       function renderDrawer() {
         var content = document.getElementById('drawerContent');
@@ -196,7 +219,6 @@ const { title = defaultTitle } = Astro.props;
         if (footer) footer.classList.remove('hidden');
 
         var total = 0;
-        var fee = getDeliveryFee();
         content.innerHTML = window.cart.map((item, i) => {
           var p = parseInt(item.price.replace(/[^0-9]/g, '')) || 0;
           total += p * item.qty;
@@ -221,15 +243,12 @@ const { title = defaultTitle } = Astro.props;
         }).join('');
 
         var dt = document.getElementById('drawerTotal');
-        if (dt) dt.textContent = 'Tk ' + (total + fee).toLocaleString();
+        if (dt) dt.textContent = 'Tk ' + total.toLocaleString();
 
         var summary = document.getElementById('drawerSummary');
         if (summary) {
-          summary.innerHTML = `<div class="flex items-center justify-between text-[11px] text-accents-5 mb-2">
+          summary.innerHTML = `<div class="flex items-center justify-between text-[11px] text-accents-5">
               <span>Items total</span><span>Tk ${total.toLocaleString()}</span>
-            </div>
-            <div class="flex items-center justify-between text-[11px] text-accents-5 mb-4">
-              <span>Delivery fee</span><span>Tk ${fee.toLocaleString()}</span>
             </div>`;
         }
       }
@@ -257,78 +276,166 @@ const { title = defaultTitle } = Astro.props;
       document.getElementById('cartOverlay').onclick = window.closeDrawer;
 
       // ─── Checkout UI Logic ───
-      const payMethod = document.getElementById('payMethod');
-      const trxContainer = document.getElementById('trxContainer');
-      const paymentInstructions = document.getElementById('paymentInstructions');
-      const paymentText = document.getElementById('paymentText');
-      const trxInput = document.getElementById('trxId');
+      function renderCheckoutSummary() {
+        var itemsEl = document.getElementById('checkoutItems');
+        var subEl = document.getElementById('checkoutSubtotalVal');
+        if (!itemsEl) return;
+        var total = 0;
+        itemsEl.innerHTML = window.cart.map(function(item) {
+          var p = parseInt(item.price.replace(/[^0-9]/g, '')) || 0;
+          total += p * item.qty;
+          return '<div class="flex items-center justify-between text-xs"><span class="text-accents-5">' + item.name + ' <span class="text-accents-4">x' + item.qty + '</span></span><span class="text-white font-medium">Tk ' + (p * item.qty).toLocaleString() + '</span></div>';
+        }).join('');
+        if (subEl) subEl.textContent = 'Tk ' + total.toLocaleString();
+        updateCheckoutTotal();
+      }
 
-      payMethod.onchange = () => {
-        const val = payMethod.value;
-        const settings = JSON.parse(localStorage.getItem('jv_settings') || '{}');
+      function getSettings() {
+        try { return JSON.parse(localStorage.getItem('jv_settings') || '{}'); } catch(e) { return {}; }
+      }
+
+      function getDeliveryFee(zone) {
+        var s = getSettings();
+        if (zone === 'ctg') return Number(s.feeCtg) || 70;
+        if (zone === 'outside') return Number(s.feeOutside) || 130;
+        return 0;
+      }
+
+      function updateCheckoutTotal() {
+        var zone = document.getElementById('deliveryZone').value;
+        var subtotal = window.cart.reduce(function(s, i) { return s + (parseInt(i.price.replace(/[^0-9]/g, '')) * i.qty); }, 0);
+        var deliveryFee = getDeliveryFee(zone);
         
-        if (val === 'cod') {
-          trxContainer.classList.add('hidden');
-          paymentInstructions.classList.add('hidden');
-          trxInput.required = false;
+        var delVal = document.getElementById('checkoutDeliveryVal');
+        var totalEl = document.getElementById('checkoutTotalVal');
+        
+        if (zone) {
+          delVal.textContent = 'Tk ' + deliveryFee;
+          if (totalEl) totalEl.textContent = 'Tk ' + (subtotal + deliveryFee).toLocaleString();
         } else {
-          trxContainer.classList.remove('hidden');
-          paymentInstructions.classList.remove('hidden');
-          trxInput.required = true;
-          
-          if (val === 'bkash') {
-            paymentText.innerHTML = `Please send money in advance to our Bkash Merchant number: <strong class="text-white">${settings.bkash || 'Not Set'}</strong>`;
-          } else if (val === 'nagad') {
-            paymentText.innerHTML = `Please send money in advance to our Nagad Personal number: <strong class="text-white">${settings.nagad || 'Not Set'}</strong>`;
-          }
+          delVal.textContent = 'Select zone';
+          if (totalEl) totalEl.textContent = 'Tk ' + subtotal.toLocaleString();
         }
+
+        // Show zone info
+        var zoneInfo = document.getElementById('zoneInfo');
+        var feeCtg = getDeliveryFee('ctg');
+        var feeOut = getDeliveryFee('outside');
+        if (zone === 'ctg') {
+          zoneInfo.innerHTML = '📍 Inside Chittagong — <strong class="text-white">Tk ' + feeCtg + ' delivery fee</strong>. Pay full amount on delivery.';
+          zoneInfo.classList.remove('hidden');
+        } else if (zone === 'outside') {
+          zoneInfo.innerHTML = '📍 Outside Chittagong — <strong class="text-white">Tk ' + feeOut + ' delivery fee</strong>. Advance payment required via Bkash or Nagad.';
+          zoneInfo.classList.remove('hidden');
+        } else {
+          zoneInfo.classList.add('hidden');
+        }
+
+        // Toggle payment sections
+        var outsidePay = document.getElementById('outsidePayment');
+        var insideCod = document.getElementById('insideCOD');
+        if (zone === 'outside') {
+          outsidePay.classList.remove('hidden');
+          insideCod.classList.add('hidden');
+          updatePayInstructions();
+        } else if (zone === 'ctg') {
+          outsidePay.classList.add('hidden');
+          insideCod.classList.remove('hidden');
+        } else {
+          outsidePay.classList.add('hidden');
+          insideCod.classList.add('hidden');
+        }
+      }
+
+      function updatePayInstructions() {
+        var method = document.getElementById('payMethod').value;
+        var inst = document.getElementById('payInstructions');
+        if (!inst) return;
+        var settings = getSettings();
+        var feeOut = getDeliveryFee('outside');
+        if (method === 'bkash') {
+          inst.innerHTML = 'Send <strong class="text-white">Tk ' + feeOut + '</strong> to Bkash Merchant: <strong class="text-cyan">' + (settings.bkash || 'Not set') + '</strong>. Then enter the TrxID below.';
+        } else if (method === 'nagad') {
+          inst.innerHTML = 'Send <strong class="text-white">Tk ' + feeOut + '</strong> to Nagad Personal: <strong class="text-cyan">' + (settings.nagad || 'Not set') + '</strong>. Then enter the TrxID below.';
+        } else {
+          inst.innerHTML = 'Select a payment method above to see instructions.';
+        }
+      }
+
+      document.getElementById('deliveryZone').onchange = function() {
+        updateCheckoutTotal();
       };
 
-      document.getElementById('checkoutBtn').onclick = () => {
+      document.getElementById('payMethod').onchange = function() {
+        updatePayInstructions();
+      };
+
+      document.getElementById('checkoutBtn').onclick = function() {
         window.closeDrawer();
-        setTimeout(() => {
-          try {
-            const s = JSON.parse(localStorage.getItem('jv_settings') || '{}');
-            document.getElementById('dispContact').textContent = s.contact || 'Not Set';
-            // Trigger the change logic once to set initial state
-            payMethod.dispatchEvent(new Event('change'));
-          } catch(e) {}
+        setTimeout(function() {
+          renderCheckoutSummary();
+          document.getElementById('deliveryZone').value = '';
+          document.getElementById('payMethod').value = '';
+          document.getElementById('trxId').value = '';
+          document.getElementById('custName').value = '';
+          document.getElementById('custPhone').value = '';
+          document.getElementById('custAddress').value = '';
+          document.getElementById('outsidePayment').classList.add('hidden');
+          document.getElementById('insideCOD').classList.add('hidden');
+          document.getElementById('zoneInfo').classList.add('hidden');
           toggleClass('checkoutModal', 'hidden', false);
-          setTimeout(() => toggleClass('checkoutModal', 'opacity-0', false), 10);
+          setTimeout(function() { toggleClass('checkoutModal', 'opacity-0', false); }, 10);
         }, 500);
       };
 
-      document.getElementById('closeCheckout').onclick = () => {
+      document.getElementById('closeCheckout').onclick = function() {
         toggleClass('checkoutModal', 'opacity-0', true);
-        setTimeout(() => toggleClass('checkoutModal', 'hidden', true), 300);
+        setTimeout(function() { toggleClass('checkoutModal', 'hidden', true); }, 300);
       };
 
-      document.getElementById('checkoutForm').onsubmit = (e) => {
+      document.getElementById('checkoutForm').onsubmit = function(e) {
         e.preventDefault();
-        var total = window.cart.reduce((s, i) => s + (parseInt(i.price.replace(/[^0-9]/g, '')) * i.qty), 0);
+        var zone = document.getElementById('deliveryZone').value;
+        var subtotal = window.cart.reduce(function(s, i) { return s + (parseInt(i.price.replace(/[^0-9]/g, '')) * i.qty); }, 0);
+        var deliveryFee = getDeliveryFee(zone);
+        var grandTotal = subtotal + deliveryFee;
+        
+        var paymentMethod = '';
+        var trxId = '';
+        if (zone === 'ctg') {
+          paymentMethod = 'cod';
+        } else if (zone === 'outside') {
+          paymentMethod = document.getElementById('payMethod').value;
+          trxId = document.getElementById('trxId').value || 'N/A';
+        }
+
         var order = {
           id: Math.random().toString(36).slice(2, 9).toUpperCase(),
-          items: [...window.cart],
-          total: total,
+          items: JSON.parse(JSON.stringify(window.cart)),
+          subtotal: subtotal,
+          deliveryFee: deliveryFee,
+          total: grandTotal,
+          zone: zone,
           customer: {
             name: document.getElementById('custName').value,
             phone: document.getElementById('custPhone').value,
             address: document.getElementById('custAddress').value,
           },
           payment: {
-            method: payMethod.value,
-            trxId: trxInput.value || 'N/A'
+            method: paymentMethod,
+            trxId: trxId
           },
           status: 'pending',
           date: new Date().toISOString()
         };
+        
         var orders = JSON.parse(localStorage.getItem('jv_orders') || '[]');
         orders.unshift(order);
         localStorage.setItem('jv_orders', JSON.stringify(orders));
         window.cart = [];
         window.saveCart();
-        location.reload();
         alert('Order Placed! ID: ' + order.id);
+        location.reload();
       };
 
       window.updateUI();
