@@ -4,7 +4,6 @@ import Layout from '../layouts/Layout.astro';
 
 <Layout title="BRICK RUSH - Premium LEGO Minifigures">
 
-  <!-- ── Hero Band ── -->
   <section class="section-hero relative overflow-hidden">
     <div class="container text-center relative z-10">
       <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-cyan-soft border border-cyan/20 mb-10 animate-fade-in opacity-0" style="animation-delay: 0.2s">
@@ -26,32 +25,24 @@ import Layout from '../layouts/Layout.astro';
       </div>
     </div>
     
-    <!-- Decorative Mesh Gradient -->
     <div class="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full max-w-[1400px] pointer-events-none opacity-40">
       <div class="absolute top-[-10%] left-[20%] w-[40%] h-[60%] bg-cyan/20 blur-[120px] rounded-full"></div>
       <div class="absolute top-[20%] right-[10%] w-[30%] h-[50%] bg-blue-500/10 blur-[100px] rounded-full"></div>
     </div>
   </section>
 
-  <!-- ── Category Filter Band ── -->
   <section class="border-y border-accents-2 bg-black py-4 sticky top-[64px] z-40">
     <div class="overflow-x-auto no-scrollbar touch-pan-x">
-      <div id="categoryFilters" class="flex items-center justify-start sm:justify-center gap-2 px-6 min-w-max mx-auto">
-        <!-- Categories injected by JS -->
-      </div>
+      <div id="categoryFilters" class="flex items-center justify-start sm:justify-center gap-2 px-6 min-w-max mx-auto"></div>
     </div>
   </section>
 
-  <!-- ── Products Grid ── -->
   <section id="products" class="py-16 sm:py-24">
     <div class="container">
-      <div id="productGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 sm:gap-6 justify-center">
-        <!-- Products injected by JS -->
-      </div>
+      <div id="productGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 sm:gap-6 justify-center"></div>
     </div>
   </section>
 
-  <!-- ── Zoom Lightbox ── -->
   <div id="zoomOverlay" class="fixed inset-0 z-[5000] bg-black/80 backdrop-blur-xl hidden opacity-0 transition-opacity duration-300 flex items-center justify-center p-4" style="display:none;">
     <button id="zoomClose" class="absolute top-6 right-6 w-10 h-10 rounded-full bg-white/10 text-white flex items-center justify-center hover:bg-white/20 transition-colors z-10">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
@@ -61,19 +52,12 @@ import Layout from '../layouts/Layout.astro';
     </div>
   </div>
 
-  <!-- ── Footer ── -->
   <footer class="relative bg-gradient-to-b from-black via-ds-background-200 to-black border-t border-accents-2 pt-16 pb-8 mt-16">
-    <!-- Decorative Top Gradient Bar -->
     <div class="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-cyan/50 to-transparent"></div>
-    
-    <!-- Glow Behind -->
     <div class="absolute top-0 left-1/2 -translate-x-1/2 w-[60%] h-32 bg-cyan/5 blur-[80px] rounded-full pointer-events-none"></div>
 
     <div class="container relative z-10">
-      <!-- Middle: 4-Column Grid -->
       <div class="grid grid-cols-2 md:grid-cols-4 gap-10 md:gap-12 mb-14">
-        
-        <!-- Column 1: Brand -->
         <div class="col-span-2 md:col-span-1">
           <div class="flex items-center gap-2 mb-5">
             <span class="w-8 h-8 bg-cyan rounded-md flex items-center justify-center text-black font-bold text-lg">B</span>
@@ -95,7 +79,6 @@ import Layout from '../layouts/Layout.astro';
           </div>
         </div>
 
-        <!-- Column 2: Quick Links -->
         <div>
           <h4 class="caption-mono text-[10px] text-cyan font-bold tracking-widest mb-5">Navigation</h4>
           <ul class="space-y-3">
@@ -107,7 +90,6 @@ import Layout from '../layouts/Layout.astro';
           </ul>
         </div>
 
-        <!-- Column 3: Categories -->
         <div>
           <h4 class="caption-mono text-[10px] text-cyan font-bold tracking-widest mb-5">Categories</h4>
           <ul class="space-y-3">
@@ -119,7 +101,6 @@ import Layout from '../layouts/Layout.astro';
           </ul>
         </div>
 
-        <!-- Column 4: Contact -->
         <div>
           <h4 class="caption-mono text-[10px] text-cyan font-bold tracking-widest mb-5">Contact</h4>
           <ul class="space-y-4" id="footerContactList">
@@ -142,7 +123,6 @@ import Layout from '../layouts/Layout.astro';
         </div>
       </div>
 
-      <!-- Bottom Bar -->
       <div class="flex flex-col sm:flex-row justify-between items-center gap-4 pt-8 border-t border-accents-2">
         <div class="text-[10px] caption-mono tracking-widest text-accents-5">
           &copy; 2024 BRICK RUSH &mdash; ALL RIGHTS RESERVED
@@ -164,7 +144,6 @@ import Layout from '../layouts/Layout.astro';
 <style>
   .no-scrollbar::-webkit-scrollbar { display: none; }
   .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-  
   .text-gradient-cyan {
     background: linear-gradient(to bottom, #ffffff 30%, var(--cyan) 100%);
     -webkit-background-clip: text;
@@ -173,47 +152,61 @@ import Layout from '../layouts/Layout.astro';
 </style>
 
 <script is:inline>
-  var defaultProducts = [
-    { name: 'Iron Man Mk 85', price: 'Tk 450', image: 'https://placehold.co/400x533/111/50e3c2?text=Iron+Man&font=inter', category: 'Marvel' },
-    { name: 'Batman Dark Knight', price: 'Tk 380', image: 'https://placehold.co/400x533/111/50e3c2?text=Batman&font=inter', category: 'DC' },
-    { name: 'Goku Ultra Instinct', price: 'Tk 520', image: 'https://placehold.co/400x533/111/50e3c2?text=Goku&font=inter', category: 'Anime' },
-    { name: 'Eleven', price: 'Tk 420', image: 'https://placehold.co/400x533/111/50e3c2?text=Eleven&font=inter', category: 'Stranger Things' },
-    { name: 'Spider-Man Miles', price: 'Tk 480', image: 'https://placehold.co/400x533/111/50e3c2?text=Miles&font=inter', category: 'Marvel' },
-    { name: 'Luffy Gear 5', price: 'Tk 550', image: 'https://placehold.co/400x533/111/50e3c2?text=Luffy&font=inter', category: 'One Piece' },
-    { name: 'Mandalorian', price: 'Tk 600', image: 'https://placehold.co/400x533/111/50e3c2?text=Mando&font=inter', category: 'Star Wars' },
-    { name: 'Naruto Baryon', price: 'Tk 520', image: 'https://placehold.co/400x533/111/50e3c2?text=Naruto&font=inter', category: 'Anime' },
-    { name: 'Wolverine Logan', price: 'Tk 460', image: 'https://placehold.co/400x533/111/50e3c2?text=Wolverine&font=inter', category: 'Marvel' },
-    { name: 'Joker Heath', price: 'Tk 400', image: 'https://placehold.co/400x533/111/50e3c2?text=Joker&font=inter', category: 'DC' },
-    { name: 'Tanjiro Sun', price: 'Tk 490', image: 'https://placehold.co/400x533/111/50e3c2?text=Tanjiro&font=inter', category: 'Anime' },
-    { name: 'Darth Vader', price: 'Tk 650', image: 'https://placehold.co/400x533/111/50e3c2?text=Vader&font=inter', category: 'Star Wars' },
-  ];
+  // ─── Supabase Config ───
+  var SUPABASE_URL = 'https://bpgdniisgxzgrrcqlnwp.supabase.co';
+  var SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJwZ2RuaWlzZ3h6Z3JyY3FsbndwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE3NjU2ODIsImV4cCI6MjA5NzM0MTY4Mn0.krm-gAAveC4y8bBIwEMFTggXSDzn4Ypj_r5UjoJ5uuk';
+
+  function supabaseFetch(path, options) {
+    return fetch(SUPABASE_URL + '/rest/v1/' + path, {
+      headers: {
+        'apikey': SUPABASE_ANON_KEY,
+        'Authorization': 'Bearer ' + SUPABASE_ANON_KEY,
+        'Content-Type': 'application/json',
+        ...(options && options.headers ? options.headers : {})
+      },
+      ...(options ? { method: options.method, body: options.body } : {})
+    });
+  }
 
   var currentCategory = 'All';
+  var allProducts = [];
 
-  function getProducts() {
+  // ─── Load Products from Supabase ───
+  async function loadProducts() {
     try {
-      const stored = localStorage.getItem('jv_products');
-      return stored ? JSON.parse(stored) : defaultProducts;
-    } catch (e) {
-      console.error('Product load error', e);
-      return defaultProducts;
+      var res = await supabaseFetch('products?order=id.asc');
+      var data = await res.json();
+      if (Array.isArray(data) && data.length > 0) {
+        allProducts = data;
+        // Cache in localStorage for offline
+        localStorage.setItem('jv_supabase_products', JSON.stringify(data));
+      } else {
+        allProducts = [];
+      }
+    } catch(e) {
+      // Fallback to cached products
+      try {
+        var cached = localStorage.getItem('jv_supabase_products');
+        if (cached) allProducts = JSON.parse(cached);
+      } catch(e2) {}
     }
+    renderFilters();
+    renderProducts();
   }
 
   function renderFilters() {
     var container = document.getElementById('categoryFilters');
     if (!container) return;
-    const products = getProducts();
-    const categories = [...new Set(products.map(p => p.category).filter(Boolean))];
+    var categories = [...new Set(allProducts.map(function(p) { return p.category; }).filter(Boolean))];
     var cats = ['All'].concat(categories);
     
-    container.innerHTML = cats.map(c => `
-      <button class="nav-link whitespace-nowrap px-4 py-1.5 transition-all ${c === currentCategory ? 'active bg-accents-2 !text-cyan' : ''}" data-cat="${c}">${c}</button>
-    `).join('');
+    container.innerHTML = cats.map(function(c) {
+      return '<button class="nav-link whitespace-nowrap px-4 py-1.5 transition-all ' + (c === currentCategory ? 'active bg-accents-2 !text-cyan' : '') + '" data-cat="' + c + '">' + c + '</button>';
+    }).join('');
     
-    container.querySelectorAll('button').forEach(btn => {
-      btn.onclick = () => {
-        currentCategory = btn.dataset.cat || 'All';
+    container.querySelectorAll('button').forEach(function(btn) {
+      btn.onclick = function() {
+        currentCategory = btn.getAttribute('data-cat') || 'All';
         renderFilters();
         renderProducts();
         if (window.innerWidth < 640) {
@@ -226,59 +219,40 @@ import Layout from '../layouts/Layout.astro';
   function renderProducts() {
     var grid = document.getElementById('productGrid');
     if (!grid) return;
-    const allProducts = getProducts();
-    var filtered = currentCategory === 'All' ? allProducts : allProducts.filter(p => p.category === currentCategory);
+    var filtered = currentCategory === 'All' ? allProducts : allProducts.filter(function(p) { return p.category === currentCategory; });
     
     if (filtered.length === 0) {
       grid.innerHTML = '<div class="col-span-full py-20 text-center text-accents-4 italic">No minifigures found in this sector.</div>';
       return;
     }
 
-    grid.innerHTML = filtered.map(p => {
-      const pName = (p.name || 'Unknown Unit').replace(/'/g, "&apos;");
-      const pPrice = p.price || 'Price TBA';
-      const pDiscount = p.discountPrice;
-      const hasDiscount = pDiscount && pDiscount !== pPrice;
-      const displayPrice = hasDiscount ? pDiscount : pPrice;
-      
-      const pCat = p.category || 'General';
-      const pImage = p.image || 'https://placehold.co/400x533/111/50e3c2?text=Unit&font=inter';
+    grid.innerHTML = filtered.map(function(p) {
+      var pName = (p.name || 'Unknown Unit').replace(/'/g, "&apos;");
+      var pPrice = p.price || 'Price TBA';
+      var pDiscount = p.discount_price;
+      var hasDiscount = pDiscount && pDiscount !== pPrice;
+      var displayPrice = hasDiscount ? pDiscount : pPrice;
+      var pImage = p.image || 'https://placehold.co/400x533/111/50e3c2?text=Unit&font=inter';
 
-      return `
-        <div class="card group cursor-pointer animate-fade-in flex flex-col h-full">
-          <div class="aspect-[3/4] rounded-sm bg-accents-1 overflow-hidden relative mb-3 flex-shrink-0">
-            ${hasDiscount ? `<div class="absolute top-2 left-2 z-10 bg-cyan text-black text-[9px] font-bold px-2 py-0.5 rounded-full uppercase tracking-tighter shadow-lg">Sale</div>` : ''}
-            <img src="${pImage}" class="w-full h-full object-contain group-hover:scale-110 transition-transform duration-700 ease-out" loading="lazy" />
-            <div class="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"></div>
-            <!-- Zoom Button -->
-            <button class="absolute bottom-2.5 right-2.5 w-7 h-7 rounded-full bg-black/70 text-white flex items-center justify-center shadow-lg ring-1 ring-white/10 hover:bg-cyan hover:text-black hover:ring-cyan/50 transition-all duration-200 z-20 backdrop-blur-sm"
-                    aria-label="Zoom"
-                    onclick="window.openZoom('${pImage}'); event.stopPropagation();">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                <circle cx="11" cy="11" r="8" />
-                <line x1="21" y1="21" x2="16.65" y2="16.65" />
-                <line x1="11" y1="8" x2="11" y2="14" />
-                <line x1="8" y1="11" x2="14" y2="11" />
-              </svg>
-            </button>
-          </div>
-          <div class="flex flex-col flex-1 justify-between gap-2">
-            <div>
-              <span class="text-[13px] sm:text-sm text-white font-medium line-clamp-2 leading-tight mb-1 block">${pName}</span>
-            </div>
-            <div class="flex items-center justify-between mt-auto">
-              <div class="flex flex-col">
-                <span class="text-cyan text-[13px] sm:text-sm font-bold leading-none">${displayPrice}</span>
-                ${hasDiscount ? `<span class="text-[9px] text-accents-4 line-through mt-0.5">${pPrice}</span>` : ''}
-              </div>
-            </div>
-            <button class="w-full mt-2 py-2 rounded-full bg-white text-black text-[11px] font-bold uppercase tracking-wider hover:bg-cyan hover:text-black transition-all duration-200"
-                    onclick="window.addToCart({name:'${pName}', price:'${displayPrice}', image:'${pImage}'}); event.stopPropagation();">
-              Add to Cart
-            </button>
-          </div>
-        </div>
-      `;
+      return '<div class="card group cursor-pointer animate-fade-in flex flex-col h-full">' +
+        '<div class="aspect-[3/4] rounded-sm bg-accents-1 overflow-hidden relative mb-3 flex-shrink-0">' +
+          (hasDiscount ? '<div class="absolute top-2 left-2 z-10 bg-cyan text-black text-[9px] font-bold px-2 py-0.5 rounded-full uppercase tracking-tighter shadow-lg">Sale</div>' : '') +
+          '<img src="' + pImage + '" class="w-full h-full object-contain group-hover:scale-110 transition-transform duration-700 ease-out" loading="lazy" />' +
+          '<div class="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"></div>' +
+          '<button class="absolute bottom-2.5 right-2.5 w-7 h-7 rounded-full bg-black/70 text-white flex items-center justify-center shadow-lg ring-1 ring-white/10 hover:bg-cyan hover:text-black hover:ring-cyan/50 transition-all duration-200 z-20 backdrop-blur-sm" aria-label="Zoom" onclick="window.openZoom(\'' + pImage + '\'); event.stopPropagation();">' +
+            '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" /><line x1="11" y1="8" x2="11" y2="14" /><line x1="8" y1="11" x2="14" y2="11" /></svg>' +
+          '</button>' +
+        '</div>' +
+        '<div class="flex flex-col flex-1 justify-between gap-2">' +
+          '<div><span class="text-[13px] sm:text-sm text-white font-medium line-clamp-2 leading-tight mb-1 block">' + pName + '</span></div>' +
+          '<div class="flex items-center justify-between mt-auto">' +
+            '<div class="flex flex-col">' +
+              '<span class="text-cyan text-[13px] sm:text-sm font-bold leading-none">' + displayPrice + '</span>' +
+              (hasDiscount ? '<span class="text-[9px] text-accents-4 line-through mt-0.5">' + pPrice + '</span>' : '') +
+            '</div>' +
+          '</div>' +
+          '<button class="w-full mt-2 py-2 rounded-full bg-white text-black text-[11px] font-bold uppercase tracking-wider hover:bg-cyan hover:text-black transition-all duration-200" onclick="window.addToCart({name:\'' + pName + '\', price:\'' + displayPrice + '\', image:\'' + pImage + '\'}); event.stopPropagation();">Add to Cart</button>' +
+        '</div></div>';
     }).join('');
   }
 
@@ -308,23 +282,33 @@ import Layout from '../layouts/Layout.astro';
     }
   });
 
-  // ─── Footer Contact Info from Settings ───
-  function loadFooterContact() {
+  // ─── Footer Contact Info from Supabase ───
+  async function loadFooterContact() {
     try {
-      var settings = JSON.parse(localStorage.getItem('jv_settings') || '{}');
-      var bkash = document.getElementById('footerBkash');
-      var nagad = document.getElementById('footerNagad');
-      var contact = document.getElementById('footerContact');
-      if (bkash) bkash.textContent = settings.bkash || 'Not set';
-      if (nagad) nagad.textContent = settings.nagad || 'Not set';
-      if (contact) contact.textContent = settings.contact || 'Not set';
-    } catch (e) {}
+      // Try cached first for instant display
+      var cached = localStorage.getItem('jv_settings_cache');
+      if (cached) {
+        var s = JSON.parse(cached);
+        if (s.bkash) document.getElementById('footerBkash').textContent = s.bkash;
+        if (s.nagad) document.getElementById('footerNagad').textContent = s.nagad;
+        if (s.contact) document.getElementById('footerContact').textContent = s.contact;
+      }
+      // Fetch fresh from Supabase
+      var res = await supabaseFetch('settings?select=*&limit=1');
+      var data = await res.json();
+      if (data && data.length > 0) {
+        var s = data[0];
+        localStorage.setItem('jv_settings_cache', JSON.stringify(s));
+        if (s.bkash) document.getElementById('footerBkash').textContent = s.bkash;
+        if (s.nagad) document.getElementById('footerNagad').textContent = s.nagad;
+        if (s.contact) document.getElementById('footerContact').textContent = s.contact;
+      }
+    } catch(e) {}
   }
 
-  // Initial Render
-  setTimeout(() => {
-    renderFilters();
-    renderProducts();
+  // ─── Initial Render ───
+  setTimeout(function() {
+    loadProducts();
     loadFooterContact();
-  }, 100);
+  }, 50);
 </script>

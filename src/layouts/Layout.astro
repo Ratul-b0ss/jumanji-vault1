@@ -14,7 +14,7 @@ const { title = defaultTitle } = Astro.props;
   <head>
     <meta charset="utf-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <meta name="viewport" content="width=device-width" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="generator" content={Astro.generator} />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -23,6 +23,9 @@ const { title = defaultTitle } = Astro.props;
     <title>{title || defaultTitle}</title>
   </head>
   <body>
+    <!-- ── Toast Container ── -->
+    <div id="toastContainer" style="position:fixed;bottom:24px;left:50%;transform:translateX(-50%);z-index:9999;display:flex;flex-direction:column;gap:8px;pointer-events:none;width:auto;max-width:90vw;"></div>
+
     <header class="nav-bar">
       <div class="container flex items-center justify-between w-full h-full">
         <a href="/" class="flex items-center gap-2 group">
@@ -135,7 +138,57 @@ const { title = defaultTitle } = Astro.props;
 
     <main><slot /></main>
 
+    <style>
+      /* ── Toast Styles ── */
+      .toast {
+        pointer-events: auto;
+        padding: 14px 24px;
+        border-radius: 12px;
+        font-size: 14px;
+        font-weight: 500;
+        text-align: center;
+        animation: toastIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.05);
+        backdrop-filter: blur(12px);
+        max-width: 400px;
+        min-width: 200px;
+      }
+      .toast.success { background: rgba(34,197,94,0.15); color: #22c55e; border: 1px solid rgba(34,197,94,0.3); }
+      .toast.error { background: rgba(239,68,68,0.15); color: #ef4444; border: 1px solid rgba(239,68,68,0.3); }
+      .toast.info { background: rgba(80,227,194,0.15); color: #50e3c2; border: 1px solid rgba(80,227,194,0.3); }
+      .toast.warning { background: rgba(245,166,35,0.15); color: #f5a623; border: 1px solid rgba(245,166,35,0.3); }
+      @keyframes toastIn {
+        from { opacity: 0; transform: translateY(20px) scale(0.95); }
+        to { opacity: 1; transform: translateY(0) scale(1); }
+      }
+      @keyframes toastOut {
+        from { opacity: 1; transform: translateY(0) scale(1); }
+        to { opacity: 0; transform: translateY(-10px) scale(0.95); }
+      }
+      @keyframes badgePop {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.4); }
+        100% { transform: scale(1); }
+      }
+      .cart-badge.pop { animation: badgePop 0.35s cubic-bezier(0.34, 1.56, 0.64, 1); }
+    </style>
+
     <script is:inline>
+      // ─── Global Toast System ───
+      window.showToast = function(message, type) {
+        type = type || 'info';
+        var container = document.getElementById('toastContainer');
+        if (!container) return;
+        var el = document.createElement('div');
+        el.className = 'toast ' + type;
+        el.textContent = message;
+        container.appendChild(el);
+        setTimeout(function() {
+          el.style.animation = 'toastOut 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards';
+          setTimeout(function() { if (el.parentNode) el.parentNode.removeChild(el); }, 250);
+        }, 2500);
+      };
+
       // ─── Supabase Config ───
       var SUPABASE_URL = 'https://bpgdniisgxzgrrcqlnwp.supabase.co';
       var SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJwZ2RuaWlzZ3h6Z3JyY3FsbndwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE3NjU2ODIsImV4cCI6MjA5NzM0MTY4Mn0.krm-gAAveC4y8bBIwEMFTggXSDzn4Ypj_r5UjoJ5uuk';
@@ -146,9 +199,9 @@ const { title = defaultTitle } = Astro.props;
             'apikey': SUPABASE_ANON_KEY,
             'Authorization': 'Bearer ' + SUPABASE_ANON_KEY,
             'Content-Type': 'application/json',
-            ...(options?.headers || {})
+            ...(options && options.headers ? options.headers : {})
           },
-          ...options
+          ...(options ? { method: options.method, body: options.body } : {})
         });
       }
 
@@ -167,7 +220,14 @@ const { title = defaultTitle } = Astro.props;
         if (navCount) navCount.textContent = '(' + count + ')';
         var badge = document.getElementById('cartBadge');
         if (badge) {
-          if (count > 0) { badge.textContent = count; badge.classList.remove('hidden'); }
+          if (count > 0) { 
+            badge.textContent = count; 
+            badge.classList.remove('hidden');
+            badge.classList.remove('pop');
+            void badge.offsetWidth; // reflow
+            badge.classList.add('pop');
+            setTimeout(function() { badge.classList.remove('pop'); }, 400);
+          }
           else { badge.classList.add('hidden'); }
         }
       };
@@ -178,6 +238,7 @@ const { title = defaultTitle } = Astro.props;
         if (existing) existing.qty++;
         else window.cart.push({ ...product, qty: 1 });
         window.saveCart();
+        window.showToast(product.name + ' added to cart!', 'success');
       };
 
       function toggleClass(id, cls, force) {
@@ -265,13 +326,11 @@ const { title = defaultTitle } = Astro.props;
       // ─── Settings (loaded from Supabase) ───
       var _settings = { fee_ctg: 70, fee_outside: 130, contact: '', bkash: '', nagad: '' };
 
-      // Try cached settings from localStorage for instant UI
       try {
         var cached = localStorage.getItem('jv_settings_cache');
         if (cached) _settings = JSON.parse(cached);
       } catch(e) {}
 
-      // Fetch settings from Supabase
       supabaseFetch('settings?select=*&limit=1')
         .then(function(r) { return r.json(); })
         .then(function(data) {
@@ -427,7 +486,6 @@ const { title = defaultTitle } = Astro.props;
           });
           if (!res.ok) throw new Error('Failed');
         } catch(err) {
-          // Fallback to localStorage if Supabase fails
           var orders = JSON.parse(localStorage.getItem('jv_orders') || '[]');
           orders.unshift(order);
           localStorage.setItem('jv_orders', JSON.stringify(orders));
@@ -435,8 +493,8 @@ const { title = defaultTitle } = Astro.props;
         
         window.cart = [];
         window.saveCart();
-        alert('Order Placed! ID: ' + orderId);
-        location.reload();
+        window.showToast('Order Placed! ID: ' + orderId, 'success');
+        setTimeout(function() { location.reload(); }, 1500);
       };
 
       window.updateUI();

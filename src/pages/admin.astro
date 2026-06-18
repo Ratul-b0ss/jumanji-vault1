@@ -24,9 +24,15 @@ import '../styles/global.css';
       .sb-hd { height: var(--header-height); display: flex; align-items: center; padding: 0 20px; gap: 12px; border-bottom: 1px solid #222; }
       .sb-nav { flex: 1; padding: 20px 10px; display: flex; flex-direction: column; gap: 2px; }
       .sb-lk { display: flex; align-items: center; gap: 12px; padding: 10px 14px; color: #888; border-radius: 8px; transition: all 0.2s ease; font-size: 14px; font-weight: 500; border: none; background: transparent; cursor: pointer; width: 100%; text-align: left; }
-      .sb-lk:hover { background: #111; color: #fff; }
-      .sb-lk.on { color: #50e3c2; background: rgba(80,227,194,0.1); }
-      .sb-ft { padding: 14px; border-top: 1px solid #222; }
+      .sb-lk:hover { background: #111; color: #fff; }          .sb-lk.on { color: #50e3c2; background: rgba(80,227,194,0.1); }
+          .sb-ft { padding: 14px; border-top: 1px solid #222; }
+          .toast { pointer-events: auto; padding: 14px 24px; border-radius: 12px; font-size: 14px; font-weight: 500; text-align: center; animation: toastIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards; box-shadow: 0 8px 32px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.05); backdrop-filter: blur(12px); max-width: 400px; min-width: 200px; }
+          .toast.success { background: rgba(34,197,94,0.15); color: #22c55e; border: 1px solid rgba(34,197,94,0.3); }
+          .toast.error { background: rgba(239,68,68,0.15); color: #ef4444; border: 1px solid rgba(239,68,68,0.3); }
+          .toast.info { background: rgba(80,227,194,0.15); color: #50e3c2; border: 1px solid rgba(80,227,194,0.3); }
+          .toast.warning { background: rgba(245,166,35,0.15); color: #f5a623; border: 1px solid rgba(245,166,35,0.3); }
+          @keyframes toastIn { from { opacity: 0; transform: translateY(20px) scale(0.95); } to { opacity: 1; transform: translateY(0) scale(1); } }
+          @keyframes toastOut { from { opacity: 1; transform: translateY(0) scale(1); } to { opacity: 0; transform: translateY(-10px) scale(0.95); } }
       .mw { flex: 1; display: flex; flex-direction: column; }
       @media (min-width: 1025px) { .mw { padding-left: var(--sidebar-width); } }
       .tb { height: var(--header-height); background: #000; border-bottom: 1px solid #222; display: flex; align-items: center; justify-content: space-between; padding: 0 20px; position: sticky; top: 0; z-index: 900; }
@@ -96,6 +102,7 @@ import '../styles/global.css';
     </style>
   </head>
   <body>
+    <div id="toastContainer" style="position:fixed;bottom:24px;left:50%;transform:translateX(-50%);z-index:9999;display:flex;flex-direction:column;gap:8px;pointer-events:none;width:auto;max-width:90vw;"></div>
     <div id="ol" class="ol"></div>
     <div id="loginScreen" class="login-screen">
       <div class="login-card card animate-fade-in">
@@ -232,6 +239,21 @@ import '../styles/global.css';
     </div>
 
     <script is:inline>
+      // ─── Toast System ───
+      window.showToast = function(message, type) {
+        type = type || 'info';
+        var container = document.getElementById('toastContainer');
+        if (!container) return;
+        var el = document.createElement('div');
+        el.className = 'toast ' + type;
+        el.textContent = message;
+        container.appendChild(el);
+        setTimeout(function() {
+          el.style.animation = 'toastOut 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards';
+          setTimeout(function() { if (el.parentNode) el.parentNode.removeChild(el); }, 250);
+        }, 2500);
+      };
+
       // ─── Supabase Client ───
       var SUPABASE_URL = 'https://bpgdniisgxzgrrcqlnwp.supabase.co';
       var SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJwZ2RuaWlzZ3h6Z3JyY3FsbndwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE3NjU2ODIsImV4cCI6MjA5NzM0MTY4Mn0.krm-gAAveC4y8bBIwEMFTggXSDzn4Ypj_r5UjoJ5uuk';
@@ -269,7 +291,7 @@ import '../styles/global.css';
         e.preventDefault();
         var user = document.getElementById('user').value;
         var pass = document.getElementById('pass').value;
-        if (user !== ADMIN_USER || pass !== ADMIN_PASS) { alert('Access Denied'); return; }
+        if (user !== ADMIN_USER || pass !== ADMIN_PASS) { window.showToast('Access Denied', 'error'); return; }
 
         // Generate token and store in Supabase
         var chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
@@ -285,7 +307,7 @@ import '../styles/global.css';
           document.getElementById('loginScreen').style.display = 'none';
           document.getElementById('dash').style.display = 'flex';
           init();
-        } catch(e) { alert('Server error'); }
+        } catch(e) { window.showToast('Server error — check connection', 'error'); }
       };
 
       // Auto-login check
@@ -370,8 +392,8 @@ import '../styles/global.css';
 
       window.deleteOrder = async function(i) {
         if (!confirm('Delete order?')) return;
-        try { await supabaseRequest('DELETE', 'orders?id=eq.' + encodeURIComponent(orders[i].id), null, { Prefer: 'return=minimal' }); orders.splice(i, 1); render(); }
-        catch(e) { alert('Failed to delete'); }
+        try { await supabaseRequest('DELETE', 'orders?id=eq.' + encodeURIComponent(orders[i].id), null, { Prefer: 'return=minimal' }); orders.splice(i, 1); render(); window.showToast('Order deleted', 'success'); }
+        catch(e) { window.showToast('Failed to delete', 'error'); }
       };
 
       window.updateOrderStatus = async function(i, status) {
@@ -379,7 +401,8 @@ import '../styles/global.css';
           await supabaseRequest('PATCH', 'orders?id=eq.' + encodeURIComponent(orders[i].id), { status: status }, { Prefer: 'return=minimal' });
           orders[i].status = status;
           render();
-        } catch(e) { alert('Failed to update'); }
+          window.showToast('Order status updated', 'success');
+        } catch(e) { window.showToast('Failed to update', 'error'); }
       };
 
       function renderOrders() {
@@ -425,8 +448,8 @@ import '../styles/global.css';
 
       window.deleteProduct = async function(i) {
         if (!confirm('Delete product?')) return;
-        try { await supabaseRequest('DELETE', 'products?id=eq.' + products[i].id, null, { Prefer: 'return=minimal' }); products.splice(i, 1); render(); }
-        catch(e) { alert('Failed to delete'); }
+        try { await supabaseRequest('DELETE', 'products?id=eq.' + products[i].id, null, { Prefer: 'return=minimal' }); products.splice(i, 1); render(); window.showToast('Product deleted', 'success'); }
+        catch(e) { window.showToast('Failed to delete', 'error'); }
       };
 
       function renderInv() {
@@ -461,9 +484,9 @@ import '../styles/global.css';
       }
 
       window.deleteCategory = async function(i) {
-        if (!confirm('Delete?')) return;
-        try { await supabaseRequest('DELETE', 'categories?id=eq.' + categories[i].id, null, { Prefer: 'return=minimal' }); categories.splice(i, 1); render(); }
-        catch(e) { alert('Failed to delete'); }
+        if (!confirm('Delete category?')) return;
+        try { await supabaseRequest('DELETE', 'categories?id=eq.' + categories[i].id, null, { Prefer: 'return=minimal' }); categories.splice(i, 1); render(); window.showToast('Category deleted', 'success'); }
+        catch(e) { window.showToast('Failed to delete', 'error'); }
       };
 
       function renderCats() {
@@ -493,7 +516,8 @@ import '../styles/global.css';
             else categories.push({ id: Date.now(), name: inp.value });
             render();
             inp.value = '';
-          } catch(err) { alert('Failed to add category'); }
+            window.showToast('Category added', 'success');
+          } catch(err) { window.showToast('Failed to add category', 'error'); }
         }
       };
 
@@ -509,14 +533,14 @@ import '../styles/global.css';
         try {
           await supabaseRequest('PATCH', 'settings?id=eq.1', body, { Prefer: 'return=minimal' });
           settings = body;
-          alert('Saved');
-        } catch(err) { alert('Failed to save'); }
+          window.showToast('Settings saved', 'success');
+        } catch(err) { window.showToast('Failed to save', 'error'); }
       };
 
       window.clearOrders = async function() {
         if (!confirm('Clear all orders?')) return;
-        try { await supabaseRequest('DELETE', 'orders?id=gt.0', null, { Prefer: 'return=minimal' }); orders = []; render(); }
-        catch(e) { alert('Failed to clear'); }
+        try { await supabaseRequest('DELETE', 'orders?id=gt.0', null, { Prefer: 'return=minimal' }); orders = []; render(); window.showToast('All orders cleared', 'success'); }
+        catch(e) { window.showToast('Failed to clear', 'error'); }
       };
 
       // ─── Product Modal ───
@@ -555,7 +579,7 @@ import '../styles/global.css';
       pFile.onchange = async function(e) {
         var file = e.target.files[0];
         if (file) {
-          if (file.size > 5 * 1024 * 1024) { alert('Image too large (max 5MB)'); return; }
+          if (file.size > 5 * 1024 * 1024) { window.showToast('Image too large (max 5MB)', 'warning'); return; }
           var reader = new FileReader();
           reader.onload = function(re) { updatePrev(re.target.result); };
           reader.readAsDataURL(file);
@@ -565,7 +589,8 @@ import '../styles/global.css';
             pUrl.value = url;
             imgData = url;
             pUrl.style.color = '#50e3c2';
-          } catch(err) { alert('Upload failed. Using URL instead.'); pUrl.value = ''; pUrl.style.color = ''; }
+            window.showToast('Image uploaded', 'success');
+          } catch(err) { window.showToast('Upload failed — use URL instead', 'error'); pUrl.value = ''; pUrl.style.color = ''; }
         }
       };
 
@@ -579,7 +604,7 @@ import '../styles/global.css';
         e.preventDefault();
         var ix = parseInt(document.getElementById('editIx').value);
         var finImg = pUrl.value || imgData;
-        if (!finImg || finImg === 'uploading...') { alert('Please add an image.'); return; }
+        if (!finImg || finImg === 'uploading...') { window.showToast('Please add an image', 'warning'); return; }
         var disc = document.getElementById('fDisc').value;
         var prod = {
           name: document.getElementById('fName').value,
@@ -599,7 +624,8 @@ import '../styles/global.css';
           }
           render();
           window.closeProductModal();
-        } catch(err) { alert('Failed to save product'); }
+          window.showToast('Product saved', 'success');
+        } catch(err) { window.showToast('Failed to save product', 'error'); }
       };
 
       function init() { load(); }
