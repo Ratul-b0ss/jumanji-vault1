@@ -52,22 +52,99 @@ import Layout from '../layouts/Layout.astro';
   </section>
 
   <!-- ── Footer ── -->
-  <footer class="border-t border-accents-2 bg-black py-12">
-    <div class="container flex flex-col md:flex-row justify-between items-center gap-6">
-      <div class="flex items-center gap-2">
-        <span class="caption-mono text-cyan font-bold tracking-tighter">BRICK</span>
-        <span class="caption-mono text-white font-bold tracking-tighter">RUSH</span>
-      </div>
-      
-      <div class="text-accents-5 text-[10px] caption-mono tracking-widest">
-        &copy; 2024 ALL RIGHTS RESERVED
+  <footer class="relative bg-gradient-to-b from-black via-ds-background-200 to-black border-t border-accents-2 pt-16 pb-8 mt-16">
+    <!-- Decorative Top Gradient Bar -->
+    <div class="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-cyan/50 to-transparent"></div>
+    
+    <!-- Glow Behind -->
+    <div class="absolute top-0 left-1/2 -translate-x-1/2 w-[60%] h-32 bg-cyan/5 blur-[80px] rounded-full pointer-events-none"></div>
+
+    <div class="container relative z-10">
+      <!-- Middle: 4-Column Grid -->
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-10 md:gap-12 mb-14">
+        
+        <!-- Column 1: Brand -->
+        <div class="col-span-2 md:col-span-1">
+          <div class="flex items-center gap-2 mb-5">
+            <span class="w-8 h-8 bg-cyan rounded-md flex items-center justify-center text-black font-bold text-lg">B</span>
+            <span class="font-bold text-lg tracking-tight text-white">BRICK<span class="text-cyan">RUSH</span></span>
+          </div>
+          <p class="text-xs text-accents-5 leading-relaxed mb-6 max-w-xs">
+            Bangladesh's premier source for authentic premium LEGO minifigures. Every piece hand-selected for the discerning collector.
+          </p>
+          <div class="flex items-center gap-3">
+            <a href="#" class="w-9 h-9 rounded-full bg-accents-1 border border-accents-2 flex items-center justify-center text-accents-5 hover:text-cyan hover:border-cyan transition-all duration-200" aria-label="Instagram">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+            </a>
+            <a href="#" class="w-9 h-9 rounded-full bg-accents-1 border border-accents-2 flex items-center justify-center text-accents-5 hover:text-cyan hover:border-cyan transition-all duration-200" aria-label="Facebook">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+            </a>
+            <a href="#" class="w-9 h-9 rounded-full bg-accents-1 border border-accents-2 flex items-center justify-center text-accents-5 hover:text-cyan hover:border-cyan transition-all duration-200" aria-label="WhatsApp">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+            </a>
+          </div>
+        </div>
+
+        <!-- Column 2: Quick Links -->
+        <div>
+          <h4 class="caption-mono text-[10px] text-cyan font-bold tracking-widest mb-5">Navigation</h4>
+          <ul class="space-y-3">
+            <li><a href="/" class="text-xs text-accents-5 hover:text-white transition-colors">Home</a></li>
+            <li><a href="#products" class="text-xs text-accents-5 hover:text-white transition-colors">Collection</a></li>
+            <li><a href="#" class="text-xs text-accents-5 hover:text-white transition-colors">New Arrivals</a></li>
+            <li><a href="#" class="text-xs text-accents-5 hover:text-white transition-colors">Limited Edition</a></li>
+            <li><a href="#" class="text-xs text-accents-5 hover:text-white transition-colors">Pre-Orders</a></li>
+          </ul>
+        </div>
+
+        <!-- Column 3: Categories -->
+        <div>
+          <h4 class="caption-mono text-[10px] text-cyan font-bold tracking-widest mb-5">Categories</h4>
+          <ul class="space-y-3">
+            <li><a href="#" class="text-xs text-accents-5 hover:text-white transition-colors">Marvel</a></li>
+            <li><a href="#" class="text-xs text-accents-5 hover:text-white transition-colors">DC</a></li>
+            <li><a href="#" class="text-xs text-accents-5 hover:text-white transition-colors">Anime</a></li>
+            <li><a href="#" class="text-xs text-accents-5 hover:text-white transition-colors">Star Wars</a></li>
+            <li><a href="#" class="text-xs text-accents-5 hover:text-white transition-colors">Exclusive</a></li>
+          </ul>
+        </div>
+
+        <!-- Column 4: Contact -->
+        <div>
+          <h4 class="caption-mono text-[10px] text-cyan font-bold tracking-widest mb-5">Contact</h4>
+          <ul class="space-y-4" id="footerContactList">
+            <li class="flex flex-col">
+              <span class="text-[9px] caption-mono tracking-widest text-accents-4 mb-1">Bkash</span>
+              <span id="footerBkash" class="text-xs text-accents-5 font-mono">—</span>
+            </li>
+            <li class="flex flex-col">
+              <span class="text-[9px] caption-mono tracking-widest text-accents-4 mb-1">Nagad</span>
+              <span id="footerNagad" class="text-xs text-accents-5 font-mono">—</span>
+            </li>
+            <li class="flex flex-col">
+              <span class="text-[9px] caption-mono tracking-widest text-accents-4 mb-1">Contact</span>
+              <span id="footerContact" class="text-xs text-accents-5 font-mono">—</span>
+            </li>
+            <li class="pt-2">
+              <a href="/admin" class="text-[9px] text-accents-4 hover:text-accents-5 transition-colors" style="letter-spacing: 0.05em;">©</a>
+            </li>
+          </ul>
+        </div>
       </div>
 
-      <div class="flex items-center gap-6">
-        <a href="/admin" class="text-accents-5 hover:text-cyan transition-colors text-[10px] caption-mono tracking-widest flex items-center gap-2">
-          <span class="w-1.5 h-1.5 rounded-full bg-accents-3"></span>
-          Access Terminal
-        </a>
+      <!-- Bottom Bar -->
+      <div class="flex flex-col sm:flex-row justify-between items-center gap-4 pt-8 border-t border-accents-2">
+        <div class="text-[10px] caption-mono tracking-widest text-accents-5">
+          &copy; 2024 BRICK RUSH &mdash; ALL RIGHTS RESERVED
+        </div>
+        <div class="flex items-center gap-6 text-[10px] caption-mono tracking-widest text-accents-5">
+          <a href="#" class="hover:text-white transition-colors">Privacy</a>
+          <a href="#" class="hover:text-white transition-colors">Terms</a>
+          <span class="flex items-center gap-1.5">
+            <span class="w-1.5 h-1.5 rounded-full bg-cyan/60 animate-pulse"></span>
+            <span class="text-cyan/80">Secure</span>
+          </span>
+        </div>
       </div>
     </div>
   </footer>
@@ -187,9 +264,23 @@ import Layout from '../layouts/Layout.astro';
     }).join('');
   }
 
+  // ─── Footer Contact Info from Settings ───
+  function loadFooterContact() {
+    try {
+      var settings = JSON.parse(localStorage.getItem('jv_settings') || '{}');
+      var bkash = document.getElementById('footerBkash');
+      var nagad = document.getElementById('footerNagad');
+      var contact = document.getElementById('footerContact');
+      if (bkash) bkash.textContent = settings.bkash || 'Not set';
+      if (nagad) nagad.textContent = settings.nagad || 'Not set';
+      if (contact) contact.textContent = settings.contact || 'Not set';
+    } catch (e) {}
+  }
+
   // Initial Render
   setTimeout(() => {
     renderFilters();
     renderProducts();
+    loadFooterContact();
   }, 100);
 </script>
