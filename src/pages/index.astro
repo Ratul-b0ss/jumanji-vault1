@@ -156,16 +156,21 @@ import Layout from '../layouts/Layout.astro';
     grid.innerHTML = filtered.map(p => {
       const pName = (p.name || 'Unknown Unit').replace(/'/g, "&apos;");
       const pPrice = p.price || 'Price TBA';
+      const pDiscount = p.discountPrice;
+      const hasDiscount = pDiscount && pDiscount !== pPrice;
+      const displayPrice = hasDiscount ? pDiscount : pPrice;
+      
       const pCat = p.category || 'General';
       const pImage = p.image || 'https://placehold.co/400x533/111/50e3c2?text=Unit&font=inter';
 
       return `
         <div class="card group cursor-pointer animate-fade-in">
           <div class="aspect-[3/4] rounded-sm bg-accents-1 overflow-hidden relative mb-4">
+            ${hasDiscount ? `<div class="absolute top-2 left-2 z-10 bg-cyan text-black text-[9px] font-bold px-2 py-0.5 rounded-full uppercase tracking-tighter shadow-lg">Sale</div>` : ''}
             <img src="${pImage}" class="w-full h-full object-contain group-hover:scale-110 transition-transform duration-700 ease-out" loading="lazy" />
             <div class="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"></div>
             <button class="absolute bottom-3 right-3 w-10 h-10 rounded-full bg-cyan text-black flex items-center justify-center opacity-0 sm:group-hover:opacity-100 transition-all transform translate-y-2 group-hover:translate-y-0 shadow-lg" 
-                    onclick="window.addToCart({name:'${pName}', price:'${pPrice}', image:'${pImage}'}); event.stopPropagation();">
+                    onclick="window.addToCart({name:'${pName}', price:'${displayPrice}', image:'${pImage}'}); event.stopPropagation();">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
                 <path d="M12 5v14M5 12h14" />
               </svg>
@@ -177,10 +182,13 @@ import Layout from '../layouts/Layout.astro';
             </div>
             <div class="flex items-center justify-between">
               <span class="text-accents-5 text-[10px] caption-mono">${pCat}</span>
-              <span class="text-cyan text-xs font-bold">${pPrice}</span>
+              <div class="flex flex-col items-end">
+                <span class="text-cyan text-xs font-bold">${displayPrice}</span>
+                ${hasDiscount ? `<span class="text-[9px] text-accents-4 line-through">${pPrice}</span>` : ''}
+              </div>
             </div>
           </div>
-          <button class="btn-primary h-8 text-xs w-full mt-4 sm:hidden" onclick="window.addToCart({name:'${pName}', price:'${pPrice}', image:'${pImage}'}); event.stopPropagation();">
+          <button class="btn-primary h-8 text-xs w-full mt-4 sm:hidden" onclick="window.addToCart({name:'${pName}', price:'${displayPrice}', image:'${pImage}'}); event.stopPropagation();">
             Add to Cart
           </button>
         </div>

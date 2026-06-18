@@ -389,26 +389,18 @@ import '../styles/global.css';
               </div>
             </header>
 
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-              <div class="lg:col-span-2 table-container">
-                <table>
-                  <thead>
-                    <tr>
-                      <th>Product</th>
-                      <th>Category</th>
-                      <th>Price</th>
-                      <th class="text-right">Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody id="inventoryBody"></tbody>
-                </table>
-              </div>
-              <div class="stat-card flex flex-col items-center justify-center">
-                <div class="caption-mono text-[10px] text-accents-5 mb-4 w-full">Category Distribution</div>
-                <div class="h-48 w-full flex items-center justify-center">
-                  <canvas id="productChart"></canvas>
-                </div>
-              </div>
+            <div class="table-container">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Product</th>
+                    <th>Category</th>
+                    <th>Price</th>
+                    <th class="text-right">Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="inventoryBody"></tbody>
+              </table>
             </div>
           </section>
 
@@ -463,45 +455,66 @@ import '../styles/global.css';
 
     <!-- ── Modals ── -->
     <div id="productModal" class="modal-overlay hidden">
-      <div class="modal-content card max-w-lg w-full">
-        <h3 id="modalTitle" class="display-sm mb-6">Product Details</h3>
-        <form id="productForm" class="space-y-4">
+      <div class="modal-content card max-w-2xl w-full">
+        <div class="flex items-center justify-between mb-8 border-b border-accents-2 pb-6">
+          <h3 id="modalTitle" class="display-sm">Product Configuration</h3>
+          <button onclick="window.closeProductModal()" class="text-accents-5 hover:text-white transition-colors text-2xl">&times;</button>
+        </div>
+        
+        <form id="productForm" class="space-y-8">
           <input type="hidden" id="editIndex" value="-1" />
-          <div>
-            <label class="caption-mono text-accents-5 mb-2 block text-[10px]">Name</label>
-            <input type="text" id="pName" class="form-input" required />
-          </div>
-          <div class="grid grid-cols-2 gap-4">
-            <div>
-              <label class="caption-mono text-accents-5 mb-2 block text-[10px]">Category</label>
-              <select id="pCat" class="form-input"></select>
-            </div>
-            <div>
-              <label class="caption-mono text-accents-5 mb-2 block text-[10px]">Price (Tk)</label>
-              <input type="number" id="pPrice" class="form-input" required />
-            </div>
-          </div>
-          <div>
-            <label class="caption-mono text-accents-5 mb-2 block text-[10px]">Product Image</label>
-            <div class="flex flex-col gap-4">
-              <div class="flex items-center gap-4">
-                <div id="imagePreview" class="w-16 h-16 rounded border border-accents-2 bg-accents-1 overflow-hidden flex items-center justify-center">
-                  <span class="text-[10px] text-accents-4">No Image</span>
+          
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <!-- Left Side: Basic Info -->
+            <div class="space-y-6">
+              <div>
+                <label class="caption-mono text-accents-5 mb-2 block text-[10px]">Product Identification</label>
+                <input type="text" id="pName" class="form-input" placeholder="Minifigure name..." required />
+              </div>
+              
+              <div>
+                <label class="caption-mono text-accents-5 mb-2 block text-[10px]">Classification</label>
+                <select id="pCat" class="form-input"></select>
+              </div>
+
+              <div class="grid grid-cols-2 gap-4">
+                <div>
+                  <label class="caption-mono text-accents-5 mb-2 block text-[10px]">Standard Price (Tk)</label>
+                  <input type="number" id="pPrice" class="form-input" placeholder="0" required />
                 </div>
-                <div class="flex-1">
-                  <input type="text" id="pImage" class="form-input mb-2" placeholder="Image URL (https://...)" />
+                <div>
+                  <label class="caption-mono text-accents-5 mb-2 block text-[10px]">Sale Price (Tk)</label>
+                  <input type="number" id="pDiscount" class="form-input" placeholder="Optional" />
+                </div>
+              </div>
+            </div>
+
+            <!-- Right Side: Visuals -->
+            <div class="space-y-6">
+              <label class="caption-mono text-accents-5 mb-2 block text-[10px]">Visual Assets</label>
+              
+              <div class="flex flex-col gap-4">
+                <div id="imagePreview" class="w-full aspect-square rounded-lg border border-accents-2 bg-accents-1 overflow-hidden flex items-center justify-center relative group">
+                  <span class="text-xs text-accents-4">No Asset Selected</span>
+                </div>
+                
+                <div class="space-y-3">
+                  <input type="text" id="pImage" class="form-input" placeholder="External Asset URL..." />
+                  
                   <div class="relative">
                     <input type="file" id="pFile" class="hidden" accept="image/*" />
-                    <button type="button" onclick="document.getElementById('pFile').click()" class="btn-secondary !h-8 !px-4 !text-[10px] uppercase font-bold tracking-wider w-full">Upload from Computer</button>
+                    <button type="button" onclick="document.getElementById('pFile').click()" class="btn-secondary !h-10 !px-4 !text-[11px] uppercase font-bold tracking-wider w-full">
+                      Upload Local Binary
+                    </button>
                   </div>
                 </div>
               </div>
-              <p class="text-[10px] text-accents-4">Supports direct URLs or local file uploads (saved as Data URLs).</p>
             </div>
           </div>
-          <div class="flex gap-4 mt-8">
-            <button type="button" onclick="window.closeProductModal()" class="btn-secondary flex-1 !h-10 text-sm">Cancel</button>
-            <button type="submit" class="btn-primary flex-1 !h-10 text-sm">Save Product</button>
+
+          <div class="flex gap-4 pt-6 border-t border-accents-2">
+            <button type="button" onclick="window.closeProductModal()" class="btn-secondary flex-1 !h-12 text-sm">Discard Changes</button>
+            <button type="submit" class="btn-primary flex-1 !h-12 text-sm">Authorize Protocol</button>
           </div>
         </form>
       </div>
@@ -582,7 +595,6 @@ import '../styles/global.css';
       let categories = [];
       let settings = { contact: '', bkash: '', nagad: '' };
       let orderChartInstance = null;
-      let productChartInstance = null;
 
       const defaultProducts = [
         { name: 'Iron Man Mk 85', price: 'Tk 450', image: 'https://placehold.co/400x533/111/50e3c2?text=Iron+Man&font=inter', category: 'Marvel' },
@@ -680,48 +692,6 @@ import '../styles/global.css';
               }
             });
           }
-
-          // Products Chart
-          const productCtx = document.getElementById('productChart')?.getContext('2d');
-          if (productCtx) {
-            if (productChartInstance) productChartInstance.destroy();
-            
-            const catCounts = {};
-            products.forEach(p => {
-              catCounts[p.category] = (catCounts[p.category] || 0) + 1;
-            });
-
-            productChartInstance = new Chart(productCtx, {
-              type: 'doughnut',
-              data: {
-                labels: Object.keys(catCounts),
-                datasets: [{
-                  data: Object.values(catCounts),
-                  backgroundColor: [
-                    '#50e3c2', '#29bc9b', '#333', '#666', '#999', '#eaeaea'
-                  ],
-                  borderWidth: 0,
-                  hoverOffset: 4
-                }]
-              },
-              options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                  legend: {
-                    position: 'bottom',
-                    labels: {
-                      color: '#888',
-                      font: { size: 10, family: 'Inter' },
-                      padding: 20,
-                      usePointStyle: true
-                    }
-                  }
-                },
-                cutout: '70%'
-              }
-            });
-          }
         } catch (e) {
           console.error('Chart rendering failed:', e);
         }
@@ -756,20 +726,32 @@ import '../styles/global.css';
       function renderInventory() {
         const body = document.getElementById('inventoryBody');
         if (!body) return;
-        body.innerHTML = products.map((p, i) => `
-          <tr class="hover:bg-accents-1/30">
-            <td class="flex items-center gap-3">
-              <img src="${p.image}" class="w-8 h-8 rounded object-cover border border-accents-2" />
-              <span class="text-white text-xs font-medium">${p.name}</span>
-            </td>
-            <td><span class="text-accents-5 text-[10px] font-bold uppercase">${p.category}</span></td>
-            <td class="text-cyan font-bold text-xs">${p.price}</td>
-            <td class="text-right space-x-3">
-              <button onclick="window.editProduct(${i})" class="text-accents-5 text-[10px] font-bold uppercase hover:text-white">Edit</button>
-              <button onclick="window.deleteProduct(${i})" class="text-error text-[10px] font-bold uppercase">Delete</button>
-            </td>
-          </tr>
-        `).join('');
+        body.innerHTML = products.map((p, i) => {
+          const hasDiscount = p.discountPrice && p.discountPrice !== p.price;
+          return `
+            <tr class="hover:bg-accents-1/30">
+              <td class="flex items-center gap-3">
+                <img src="${p.image}" class="w-8 h-8 rounded object-cover border border-accents-2" />
+                <span class="text-white text-xs font-medium">${p.name}</span>
+              </td>
+              <td><span class="text-accents-5 text-[10px] font-bold uppercase">${p.category}</span></td>
+              <td>
+                <div class="flex flex-col">
+                  ${hasDiscount ? `
+                    <span class="text-cyan font-bold text-xs">${p.discountPrice}</span>
+                    <span class="text-accents-4 text-[9px] line-through">${p.price}</span>
+                  ` : `
+                    <span class="text-white font-medium text-xs">${p.price}</span>
+                  `}
+                </div>
+              </td>
+              <td class="text-right space-x-3">
+                <button onclick="window.editProduct(${i})" class="text-accents-5 text-[10px] font-bold uppercase hover:text-white">Edit</button>
+                <button onclick="window.deleteProduct(${i})" class="text-error text-[10px] font-bold uppercase">Delete</button>
+              </td>
+            </tr>
+          `;
+        }).join('');
       }
 
       function renderCategories() {
@@ -875,6 +857,7 @@ import '../styles/global.css';
         document.getElementById('pName').value = p.name;
         document.getElementById('pCat').value = p.category;
         document.getElementById('pPrice').value = p.price.replace('Tk ', '');
+        document.getElementById('pDiscount').value = p.discountPrice ? p.discountPrice.replace('Tk ', '') : '';
         pUrl.value = p.image.startsWith('data:') ? '' : p.image;
         updatePreview(p.image);
         pModal.classList.remove('hidden');
@@ -896,10 +879,12 @@ import '../styles/global.css';
           return;
         }
 
+        const discVal = document.getElementById('pDiscount').value;
         const newP = {
           name: document.getElementById('pName').value,
           category: document.getElementById('pCat').value,
           price: 'Tk ' + document.getElementById('pPrice').value,
+          discountPrice: discVal ? 'Tk ' + discVal : null,
           image: finalImage
         };
         

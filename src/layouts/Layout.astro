@@ -79,27 +79,35 @@ const { title = defaultTitle } = Astro.props;
           <p class="body-sm text-accents-5">Complete your order details below.</p>
         </div>
         <form id="checkoutForm" class="space-y-6">
-          <div id="paymentInstructions" class="p-4 bg-cyan/5 border border-cyan/20 rounded-sm mb-6">
+          <div id="paymentInstructions" class="p-4 bg-cyan/5 border border-cyan/20 rounded-sm mb-6 hidden">
             <h3 class="caption-mono text-cyan text-[10px] uppercase mb-3 tracking-wider">Payment Instructions</h3>
             <div class="space-y-2">
-              <div class="flex justify-between items-center">
-                <span class="text-[10px] text-accents-5 uppercase">Bkash (Merchant)</span>
-                <span id="dispBkash" class="text-xs font-bold text-white">Not Set</span>
-              </div>
-              <div class="flex justify-between items-center">
-                <span class="text-[10px] text-accents-5 uppercase">Nagad (Personal)</span>
-                <span id="dispNagad" class="text-xs font-bold text-white">Not Set</span>
-              </div>
-              <div class="flex justify-between items-center border-t border-cyan/10 pt-2 mt-2">
+              <p id="paymentText" class="text-xs text-accents-7 mb-3"></p>
+              <div class="flex justify-between items-center border-t border-cyan/10 pt-2">
                 <span class="text-[10px] text-accents-5 uppercase">Support</span>
                 <span id="dispContact" class="text-xs font-bold text-cyan">Not Set</span>
               </div>
             </div>
           </div>
+
           <div class="grid grid-cols-1 gap-4">
             <input type="text" id="custName" class="form-input" required placeholder="Full Name" />
             <input type="tel" id="custPhone" class="form-input" required placeholder="Phone Number" />
             <textarea id="custAddress" class="form-textarea" required placeholder="Delivery Address"></textarea>
+            
+            <div>
+              <label class="caption-mono text-accents-5 mb-2 block text-[10px]">Payment Method</label>
+              <select id="payMethod" class="form-input" required>
+                <option value="cod">Cash on Delivery</option>
+                <option value="bkash">Bkash (Send Money First)</option>
+                <option value="nagad">Nagad (Send Money First)</option>
+              </select>
+            </div>
+
+            <div id="trxContainer" class="hidden">
+              <label class="caption-mono text-accents-5 mb-2 block text-[10px]">Transaction ID (TrxID)</label>
+              <input type="text" id="trxId" class="form-input" placeholder="8X7Y6Z..." />
+            </div>
           </div>
           <button type="submit" class="btn-primary w-full mt-4">Place Order Now</button>
         </form>
