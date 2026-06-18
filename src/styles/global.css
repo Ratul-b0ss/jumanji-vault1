@@ -232,7 +232,12 @@ select.form-input:focus {
 .container {
   max-width: var(--page-width);
   margin: 0 auto;
-  padding: 0 var(--spacing-lg);
+  padding: 0 var(--spacing-md);
+}
+@media (min-width: 640px) {
+  .container {
+    padding: 0 var(--spacing-lg);
+  }
 }
 
 .section-hero {
@@ -323,12 +328,18 @@ select.form-input:focus {
   border: 1px solid var(--accents-2);
   width: 100%;
   max-width: 500px;
-  max-height: 80vh;
-  padding: 32px;
+  max-height: 85vh;
+  padding: 20px;
   border-radius: var(--rounded-lg);
   box-shadow: var(--shadow-level-5);
   animation: modal-in 0.3s cubic-bezier(0.16, 1, 0.3, 1);
   overflow-y: auto;
+}
+@media (min-width: 640px) {
+  .modal-content {
+    padding: 32px;
+    max-height: 80vh;
+  }
 }
 
 @keyframes modal-in {
