@@ -4,139 +4,168 @@ import Layout from '../layouts/Layout.astro';
 
 <Layout title="BRICK RUSH - Premium LEGO Minifigures">
 
-  <!-- HERO -->
-  <section class="section-hero relative section-fade-in">
-    <div class="page-container relative z-10 text-center">
-      <!-- Headline -->
-      <h1 class="typo-display-xl mx-auto mb-3 md:mb-5 text-gradient-brand" style="max-width: 800px; font-size: clamp(38px, 6vw, 72px); line-height: 1.05;">
-        BRICK RUSH
+  <!-- ── Hero Band ── -->
+  <section class="section-hero relative overflow-hidden">
+    <div class="container text-center relative z-10">
+      <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-cyan-soft border border-cyan/20 mb-10 animate-fade-in opacity-0" style="animation-delay: 0.2s">
+        <span class="w-2 h-2 rounded-full bg-cyan animate-pulse"></span>
+        <span class="caption-mono text-[10px] text-cyan font-bold">New Exclusive Drops Live</span>
+      </div>
+      
+      <h1 class="display-xl mb-6 text-gradient-cyan animate-fade-in opacity-0" style="animation-delay: 0.4s">
+        Build your legacy <br class="hidden sm:block" /> with premium bricks.
       </h1>
 
-      <p class="mx-auto mb-5 md:mb-8 text-gradient-gold" style="max-width: 520px; font-size: clamp(13px, 1.6vw, 15px); line-height: 1.6;">
-        Marvel, DC, Anime, Dragon Ball Z, and more. Authentic detail, premium ABS plastic, cash on delivery across Bangladesh.
+      <p class="body-lg mx-auto mb-12 max-w-xl animate-fade-in opacity-0" style="animation-delay: 0.6s">
+        Authentic detail, premium ABS plastic, and the most exclusive minifigures in Bangladesh. Hand-picked for the ultimate collector.
       </p>
 
-      <!-- CTAs -->
-      <div class="mb-6 md:mb-14">
-        <a href="#products" class="btn-ghost hero-cta">
-          Browse Collection
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ml-1.5 md:ml-2">
-            <path d="M5 12h14"/><path d="m12 5 7 7-7 7"/>
-          </svg>
-        </a>
+      <div class="flex flex-col sm:flex-row items-center justify-center gap-4 animate-fade-in opacity-0" style="animation-delay: 0.8s">
+        <a href="#products" class="btn-primary w-full sm:w-auto">Explore Collection</a>
+        <a href="#" class="btn-secondary w-full sm:w-auto">View Showcase</a>
       </div>
+    </div>
+    
+    <!-- Decorative Mesh Gradient -->
+    <div class="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full max-w-[1400px] pointer-events-none opacity-40">
+      <div class="absolute top-[-10%] left-[20%] w-[40%] h-[60%] bg-cyan/20 blur-[120px] rounded-full"></div>
+      <div class="absolute top-[20%] right-[10%] w-[30%] h-[50%] bg-blue-500/10 blur-[100px] rounded-full"></div>
+    </div>
+  </section>
 
-      <!-- Feature pills -->
-      <div class="flex flex-wrap items-center justify-center gap-1.5 md:gap-2 px-0">
-        <span class="badge-pill text-[11px] md:text-[13px] px-2 md:px-3 py-0.5 md:py-1">Cash on Delivery</span>
-        <span class="badge-pill text-[11px] md:text-[13px] px-2 md:px-3 py-0.5 md:py-1">Premium ABS</span>
-        <span class="badge-pill text-[11px] md:text-[13px] px-2 md:px-3 py-0.5 md:py-1">1-3 Day Delivery</span>
-        <span class="badge-pill text-[11px] md:text-[13px] px-2 md:px-3 py-0.5 md:py-1">Accessories</span>
-        <span class="badge-pill text-[11px] md:text-[13px] px-2 md:px-3 py-0.5 md:py-1">Authentic Design</span>
+  <!-- ── Category Filter Band ── -->
+  <section class="border-y border-accents-2 bg-black py-4 sticky top-[64px] z-40">
+    <div class="container overflow-x-auto no-scrollbar">
+      <div id="categoryFilters" class="flex items-center justify-start sm:justify-center gap-2 px-2 sm:px-0">
+        <!-- Categories injected by JS -->
       </div>
     </div>
   </section>
 
-
-
-  <!-- PRODUCTS -->
-  <section id="products" class="section-products section-fade-in">
-    <div class="page-container">
-      <!-- Category filter tabs -->
-      <div id="categoryFilters" class="flex flex-wrap items-center gap-2 mb-6"></div>
-
-      <div id="productGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3"></div>
-
+  <!-- ── Products Grid ── -->
+  <section id="products" class="py-16 sm:py-24">
+    <div class="container">
+      <div id="productGrid" class="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 sm:gap-6">
+        <!-- Products injected by JS -->
+      </div>
     </div>
   </section>
 
 </Layout>
 
-<script>
+<style>
+  .no-scrollbar::-webkit-scrollbar { display: none; }
+  .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+  
+  .text-gradient-cyan {
+    background: linear-gradient(to bottom, #ffffff 30%, var(--cyan) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  @media (max-width: 480px) {
+    #productGrid {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+</style>
+
+<script is:inline>
   var defaultProducts = [
-    { name: 'Iron Man Mk 85', price: 'Tk 450', image: 'https://placehold.co/400x533/141414/FFD700?text=Iron+Man+Mk+85&font=inter', tag: 'Marvel', category: 'Marvel' },
-    { name: 'Batman Dark Knight', price: 'Tk 380', image: 'https://placehold.co/400x533/141414/FFD700?text=Batman+Dark+Knight&font=inter', tag: 'DC', category: 'DC' },
-    { name: 'Goku Ultra Instinct', price: 'Tk 520', image: 'https://placehold.co/400x533/141414/FFD700?text=Goku+Ultra+Instinct&font=inter', tag: 'Anime', category: 'Dragon Ball Z' },
-    { name: 'Eleven', price: 'Tk 420', image: 'https://placehold.co/400x533/141414/FFD700?text=Eleven&font=inter', tag: 'Stranger Things', category: 'Stranger Things' },
-    { name: 'Spider-Man Miles', price: 'Tk 480', image: 'https://placehold.co/400x533/141414/FFD700?text=Spider-Man+Miles&font=inter', tag: 'Marvel', category: 'Marvel' },
-    { name: 'Luffy Gear 5', price: 'Tk 550', image: 'https://placehold.co/400x533/141414/FFD700?text=Luffy+Gear+5&font=inter', tag: 'Anime', category: 'One Piece' },
+    { name: 'Iron Man Mk 85', price: 'Tk 450', image: 'https://placehold.co/400x533/111/50e3c2?text=Iron+Man&font=inter', category: 'Marvel' },
+    { name: 'Batman Dark Knight', price: 'Tk 380', image: 'https://placehold.co/400x533/111/50e3c2?text=Batman&font=inter', category: 'DC' },
+    { name: 'Goku Ultra Instinct', price: 'Tk 520', image: 'https://placehold.co/400x533/111/50e3c2?text=Goku&font=inter', category: 'Anime' },
+    { name: 'Eleven', price: 'Tk 420', image: 'https://placehold.co/400x533/111/50e3c2?text=Eleven&font=inter', category: 'Stranger Things' },
+    { name: 'Spider-Man Miles', price: 'Tk 480', image: 'https://placehold.co/400x533/111/50e3c2?text=Miles&font=inter', category: 'Marvel' },
+    { name: 'Luffy Gear 5', price: 'Tk 550', image: 'https://placehold.co/400x533/111/50e3c2?text=Luffy&font=inter', category: 'One Piece' },
+    { name: 'Mandalorian', price: 'Tk 600', image: 'https://placehold.co/400x533/111/50e3c2?text=Mando&font=inter', category: 'Star Wars' },
+    { name: 'Naruto Baryon', price: 'Tk 520', image: 'https://placehold.co/400x533/111/50e3c2?text=Naruto&font=inter', category: 'Anime' },
   ];
-  var defaultCategories = ['Marvel','DC','Anime','Dragon Ball Z','Stranger Things','One Piece'];
 
   var currentCategory = 'All';
 
-  function esc(str) { return String(str).replace(/"/g, '&quot;').replace(/'/g, '&#39;'); }
-
   function getProducts() {
-    try { return JSON.parse(localStorage.getItem('jv_products')) || defaultProducts; }
-    catch { return defaultProducts; }
+    try {
+      const stored = localStorage.getItem('jv_products');
+      return stored ? JSON.parse(stored) : defaultProducts;
+    } catch (e) {
+      console.error('Product load error', e);
+      return defaultProducts;
+    }
   }
 
-  function getCategories() {
-    try { return JSON.parse(localStorage.getItem('jv_categories')) || defaultCategories; }
-    catch { return defaultCategories; }
-  }
-
-  function renderCategoryFilters() {
+  function renderFilters() {
     var container = document.getElementById('categoryFilters');
     if (!container) return;
-    var cats = getCategories();
-    var allCats = ['All'].concat(cats);
-    container.innerHTML = allCats.map(function(c) {
-      var active = c === currentCategory ? ' category-filter-active' : '';
-      return '<button class="category-filter' + active + '" data-cat="' + esc(c) + '">' + esc(c) + '</button>';
-    }).join('');
-    container.querySelectorAll('.category-filter').forEach(function(btn) {
-      btn.addEventListener('click', function() {
-        currentCategory = this.dataset.cat;
-        renderCategoryFilters();
+    const products = getProducts();
+    const categories = [...new Set(products.map(p => p.category).filter(Boolean))];
+    var cats = ['All'].concat(categories);
+    
+    container.innerHTML = cats.map(c => `
+      <button class="nav-link whitespace-nowrap px-4 py-1.5 transition-all ${c === currentCategory ? 'active bg-accents-2 !text-cyan' : ''}" data-cat="${c}">${c}</button>
+    `).join('');
+    
+    container.querySelectorAll('button').forEach(btn => {
+      btn.onclick = () => {
+        currentCategory = btn.dataset.cat || 'All';
+        renderFilters();
         renderProducts();
-      });
+        if (window.innerWidth < 640) {
+           document.getElementById('products').scrollIntoView({ behavior: 'smooth' });
+        }
+      };
     });
   }
 
   function renderProducts() {
-    var products = getProducts();
     var grid = document.getElementById('productGrid');
     if (!grid) return;
-
-    var filtered = currentCategory === 'All'
-      ? products
-      : products.filter(function(p) { return p.category === currentCategory; });
-
+    const allProducts = getProducts();
+    var filtered = currentCategory === 'All' ? allProducts : allProducts.filter(p => p.category === currentCategory);
+    
     if (filtered.length === 0) {
-      grid.innerHTML = '<p style="grid-column:1/-1;text-align:center;padding:60px 0;color:var(--muted);">No products in this category.</p>';
+      grid.innerHTML = '<div class="col-span-full py-20 text-center text-accents-4 italic">No minifigures found in this sector.</div>';
       return;
     }
 
-    grid.innerHTML = filtered.map(function(p, i) {
-      return '<article class="card-product product-card-entrance" style="animation-delay:' + (i * 0.06) + 's">' +
-        '<div class="card-img-wrap">' +
-        '<img src="' + p.image + '" alt="' + p.name + '" loading="lazy" />' +
-        (p.tag ? '<span class="card-tag">' + p.tag + '</span>' : '') +
-        '<button type="button" class="card-add-btn" data-name="' + esc(p.name) + '" data-price="' + esc(p.price) + '" data-image="' + esc(p.image) + '">' +
-        '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>' +
-        '</button></div>' +
-        '<div class="card-info">' +
-        '<span class="card-name">' + p.name + '</span>' +
-        '<span class="card-price">' + p.price + '</span></div></article>';
-    }).join('');
+    grid.innerHTML = filtered.map(p => {
+      const pName = (p.name || 'Unknown Unit').replace(/'/g, "&apos;");
+      const pPrice = p.price || 'Price TBA';
+      const pCat = p.category || 'General';
+      const pImage = p.image || 'https://placehold.co/400x533/111/50e3c2?text=Unit&font=inter';
 
-    // Wire up + buttons
-    grid.querySelectorAll('button').forEach(function(btn) {
-      btn.addEventListener('click', function() {
-        var product = {
-          name: this.dataset.name,
-          price: this.dataset.price,
-          image: this.dataset.image,
-        };
-        if (window.addToCart) window.addToCart(product);
-      });
-    });
+      return `
+        <div class="card group cursor-pointer animate-fade-in">
+          <div class="aspect-[3/4] rounded-sm bg-accents-1 overflow-hidden relative mb-4">
+            <img src="${pImage}" class="w-full h-full object-contain group-hover:scale-110 transition-transform duration-700 ease-out" loading="lazy" />
+            <div class="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"></div>
+            <button class="absolute bottom-3 right-3 w-10 h-10 rounded-full bg-cyan text-black flex items-center justify-center opacity-0 sm:group-hover:opacity-100 transition-all transform translate-y-2 group-hover:translate-y-0 shadow-lg" 
+                    onclick="window.addToCart({name:'${pName}', price:'${pPrice}', image:'${pImage}'}); event.stopPropagation();">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                <path d="M12 5v14M5 12h14" />
+              </svg>
+            </button>
+          </div>
+          <div class="flex flex-col gap-1">
+            <div class="flex items-start justify-between gap-2">
+              <span class="body-sm text-white font-medium truncate">${pName}</span>
+            </div>
+            <div class="flex items-center justify-between">
+              <span class="text-accents-5 text-[10px] caption-mono">${pCat}</span>
+              <span class="text-cyan text-xs font-bold">${pPrice}</span>
+            </div>
+          </div>
+          <button class="btn-primary h-8 text-xs w-full mt-4 sm:hidden" onclick="window.addToCart({name:'${pName}', price:'${pPrice}', image:'${pImage}'}); event.stopPropagation();">
+            Add to Cart
+          </button>
+        </div>
+      `;
+    }).join('');
   }
 
-  document.addEventListener('DOMContentLoaded', function() {
-    renderCategoryFilters();
+  // Initial Render
+  setTimeout(() => {
+    renderFilters();
     renderProducts();
-  });
+  }, 100);
 </script>
