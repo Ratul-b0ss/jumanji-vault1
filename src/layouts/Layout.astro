@@ -113,19 +113,37 @@ const { title = defaultTitle } = Astro.props;
               <span>Delivery Fee</span>
               <span id="checkoutDeliveryVal" class="text-white font-bold">Select zone</span>
             </div>
+            <div id="checkoutDiscountRow" class="flex items-center justify-between text-xs text-accents-5 mt-2 hidden">
+              <span>Coupon Discount</span>
+              <span id="checkoutDiscountVal" class="text-green-400 font-bold"></span>
+            </div>
             <div class="flex items-center justify-between text-sm mt-3 pt-3 border-t border-accents-2">
               <span class="font-bold text-white">Total</span>
               <span id="checkoutTotalVal" class="text-cyan font-bold"></span>
+            </div>
+
+            <div id="couponSection" class="mt-3 pt-3 border-t border-accents-2">
+              <div class="flex gap-2">
+                <input type="text" id="couponInput" class="form-input !h-9 !text-xs uppercase" placeholder="Coupon code" />
+                <button type="button" id="applyCouponBtn" class="btn-sm cyan" style="background:var(--cyan-soft);min-width:70px;">Apply</button>
+              </div>
+              <div id="couponStatus" class="mt-1.5 text-[10px] text-accents-4"></div>
             </div>
           </div>
 
           <div>
             <label class="caption-mono text-accents-5 mb-2 block text-[10px]">Delivery Zone</label>
-            <select id="deliveryZone" class="form-input" required>
-              <option value="">Select Zone</option>
-              <option value="ctg">Inside Chittagong</option>
-              <option value="outside">Outside Chittagong</option>
-            </select>
+            <input type="hidden" id="deliveryZone" value="" />
+            <div class="flex gap-2">
+              <button type="button" class="zone-btn flex-1" data-zone="ctg">
+                <span class="zone-btn-icon">📍</span>
+                <span class="zone-btn-text">Inside<br class="sm:hidden" /> CTG</span>
+              </button>
+              <button type="button" class="zone-btn flex-1" data-zone="outside">
+                <span class="zone-btn-icon">🌍</span>
+                <span class="zone-btn-text">Outside<br class="sm:hidden" /> CTG</span>
+              </button>
+            </div>
             <div id="zoneInfo" class="mt-2 text-[11px] text-accents-4 hidden"></div>
           </div>
 
@@ -142,11 +160,15 @@ const { title = defaultTitle } = Astro.props;
             <h3 class="caption-mono text-[10px] text-white font-bold tracking-wider mb-3">Payment Method (Advance)</h3>
             <div class="space-y-3">
               <div id="payInstructions" class="p-3 bg-cyan/5 border border-cyan/20 rounded-sm text-xs text-accents-6"></div>
-              <select id="payMethod" class="form-input">
-                <option value="">Select Payment Method</option>
-                <option value="bkash">Bkash</option>
-                <option value="nagad">Nagad</option>
-              </select>
+              <input type="hidden" id="payMethod" value="" />
+              <div class="flex gap-2">
+                <button type="button" class="pay-btn flex-1" data-method="bkash">
+                  <span class="pay-btn-text">Bkash</span>
+                </button>
+                <button type="button" class="pay-btn flex-1" data-method="nagad">
+                  <span class="pay-btn-text">Nagad</span>
+                </button>
+              </div>
               <input type="text" id="trxId" class="form-input" placeholder="Transaction ID (TrxID)" />
             </div>
           </div>
@@ -307,6 +329,75 @@ const { title = defaultTitle } = Astro.props;
         100% { transform: scale(1); }
       }
       .cart-badge.pop { animation: badgePop 0.35s cubic-bezier(0.34, 1.56, 0.64, 1); }
+      .pay-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 12px 16px;
+        border-radius: 8px;
+        border: 1px solid var(--accents-2);
+        background: var(--ds-background-200);
+        color: var(--accents-5);
+        font-size: 13px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        min-height: 44px;
+        -webkit-tap-highlight-color: transparent;
+      }
+      .pay-btn:hover {
+        border-color: var(--accents-3);
+        color: var(--accents-6);
+      }
+      .pay-btn.on {
+        border-color: var(--cyan);
+        background: var(--cyan-soft);
+        color: var(--cyan);
+        box-shadow: 0 0 0 1px rgba(80,227,194,0.2);
+      }
+      .pay-btn.on .pay-btn-text::before {
+        content: '✓ ';
+      }
+      .pay-btn:active {
+        transform: scale(0.97);
+      }
+      .zone-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        padding: 14px 12px;
+        border-radius: 10px;
+        border: 1px solid var(--accents-2);
+        background: var(--ds-background-200);
+        color: var(--accents-5);
+        font-size: 12px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        min-height: 52px;
+        -webkit-tap-highlight-color: transparent;
+        line-height: 1.2;
+      }
+      .zone-btn:hover {
+        border-color: var(--accents-3);
+        color: var(--accents-6);
+      }
+      .zone-btn.on {
+        border-color: var(--cyan);
+        background: var(--cyan-soft);
+        color: var(--cyan);
+        box-shadow: 0 0 0 1px rgba(80,227,194,0.2);
+      }
+      .zone-btn.on .zone-btn-text::before {
+        content: '✓ ';
+      }
+      .zone-btn .zone-btn-icon {
+        font-size: 16px;
+      }
+      .zone-btn:active {
+        transform: scale(0.97);
+      }
     </style>
 
     <script is:inline>
@@ -537,6 +628,9 @@ const { title = defaultTitle } = Astro.props;
       document.getElementById('closeDrawer').onclick = window.closeDrawer;
       document.getElementById('cartOverlay').onclick = window.closeDrawer;
 
+      // ─── Coupon State ───
+      var _appliedCoupon = null; // { code, discount_type, discount_value, discount_amount }
+
       // ─── Settings (loaded from Supabase) ───
       var _settings = { fee_ctg: 70, fee_outside: 130, contact: '', bkash: '', nagad: '' };
 
@@ -576,20 +670,42 @@ const { title = defaultTitle } = Astro.props;
         updateCheckoutTotal();
       }
 
+      function getCouponDiscountAmount() {
+        if (!_appliedCoupon) return 0;
+        var subtotal = window.cart.reduce(function(s, i) { return s + (parseInt(i.price.replace(/[^0-9]/g, '')) * i.qty); }, 0);
+        if (_appliedCoupon.discount_type === 'percentage') {
+          return Math.round(subtotal * _appliedCoupon.discount_value / 100);
+        } else {
+          return Math.min(_appliedCoupon.discount_value, subtotal);
+        }
+      }
+
       function updateCheckoutTotal() {
         var zone = document.getElementById('deliveryZone').value;
         var subtotal = window.cart.reduce(function(s, i) { return s + (parseInt(i.price.replace(/[^0-9]/g, '')) * i.qty); }, 0);
+        var discountAmt = getCouponDiscountAmount();
+        var discountedSubtotal = subtotal - discountAmt;
         var deliveryFee = getDeliveryFee(zone);
         
         var delVal = document.getElementById('checkoutDeliveryVal');
         var totalEl = document.getElementById('checkoutTotalVal');
+        var discRow = document.getElementById('checkoutDiscountRow');
+        var discVal = document.getElementById('checkoutDiscountVal');
+        
+        // Show/hide discount row
+        if (_appliedCoupon && discountAmt > 0) {
+          discRow.classList.remove('hidden');
+          discVal.textContent = '-Tk ' + discountAmt.toLocaleString();
+        } else {
+          discRow.classList.add('hidden');
+        }
         
         if (zone) {
           delVal.textContent = 'Tk ' + deliveryFee;
-          if (totalEl) totalEl.textContent = 'Tk ' + (subtotal + deliveryFee).toLocaleString();
+          if (totalEl) totalEl.textContent = 'Tk ' + (discountedSubtotal + deliveryFee).toLocaleString();
         } else {
           delVal.textContent = 'Select zone';
-          if (totalEl) totalEl.textContent = 'Tk ' + subtotal.toLocaleString();
+          if (totalEl) totalEl.textContent = 'Tk ' + discountedSubtotal.toLocaleString();
         }
 
         var zoneInfo = document.getElementById('zoneInfo');
@@ -624,26 +740,130 @@ const { title = defaultTitle } = Astro.props;
         var method = document.getElementById('payMethod').value;
         var inst = document.getElementById('payInstructions');
         if (!inst) return;
+        
+        var subtotal = window.cart.reduce(function(s, i) { return s + (parseInt(i.price.replace(/[^0-9]/g, '')) * i.qty); }, 0);
+        var discountAmt = getCouponDiscountAmount();
+        var discountedSubtotal = subtotal - discountAmt;
         var feeOut = getDeliveryFee('outside');
+        var totalAmount = discountedSubtotal + feeOut;
+
         if (method === 'bkash') {
-          inst.innerHTML = 'Send <strong class="text-white">Tk ' + feeOut + '</strong> to Bkash Merchant: <strong class="text-cyan">' + (_settings.bkash || 'Not set') + '</strong>. Then enter the TrxID below.';
+          inst.innerHTML = 'Please send <strong class="text-white">Tk ' + totalAmount.toLocaleString() + '</strong> in advance to <strong>Bkash Merchant</strong>: <strong class="text-cyan">' + (_settings.bkash || 'Not set') + '</strong>. Then enter the Transaction ID below to confirm your order.';
         } else if (method === 'nagad') {
-          inst.innerHTML = 'Send <strong class="text-white">Tk ' + feeOut + '</strong> to Nagad Personal: <strong class="text-cyan">' + (_settings.nagad || 'Not set') + '</strong>. Then enter the TrxID below.';
+          inst.innerHTML = 'Please send <strong class="text-white">Tk ' + totalAmount.toLocaleString() + '</strong> in advance to <strong>Nagad Personal</strong>: <strong class="text-cyan">' + (_settings.nagad || 'Not set') + '</strong>. Then enter the Transaction ID below to confirm your order.';
         } else {
-          inst.innerHTML = 'Select a payment method above to see instructions.';
+          inst.innerHTML = 'Select a payment method below to see payment instructions.';
         }
       }
 
-      document.getElementById('deliveryZone').onchange = function() { updateCheckoutTotal(); };
-      document.getElementById('payMethod').onchange = function() { updatePayInstructions(); };
+      // ─── Payment Method Buttons ───
+      document.addEventListener('click', function(e) {
+        var btn = e.target.closest('.pay-btn');
+        if (!btn) return;
+        var method = btn.getAttribute('data-method');
+        document.querySelectorAll('.pay-btn').forEach(function(b) { b.classList.remove('on'); });
+        btn.classList.add('on');
+        document.getElementById('payMethod').value = method;
+        updatePayInstructions();
+      });
+
+      // ─── Coupon Apply Button ───
+      document.getElementById('applyCouponBtn').onclick = async function() {
+        var code = document.getElementById('couponInput').value.trim().toUpperCase();
+        var statusEl = document.getElementById('couponStatus');
+        if (!code) { statusEl.textContent = 'Enter a coupon code.'; statusEl.style.color = '#888'; return; }
+
+        var btn = this;
+        btn.textContent = '...';
+        btn.disabled = true;
+
+        try {
+          var res = await supabaseFetch('coupons?code=eq.' + encodeURIComponent(code) + '&select=*');
+          var data = await res.json();
+          var coupon = Array.isArray(data) && data.length > 0 ? data[0] : null;
+
+          if (!coupon) { statusEl.textContent = 'Invalid coupon code.'; statusEl.style.color = '#ef4444'; btn.textContent = 'Apply'; btn.disabled = false; return; }
+          if (coupon.active === false) { statusEl.textContent = 'This coupon is no longer active.'; statusEl.style.color = '#ef4444'; btn.textContent = 'Apply'; btn.disabled = false; return; }
+          if (coupon.expires_at && new Date(coupon.expires_at) < new Date()) { statusEl.textContent = 'This coupon has expired.'; statusEl.style.color = '#ef4444'; btn.textContent = 'Apply'; btn.disabled = false; return; }
+          if (coupon.max_uses > 0 && (coupon.used_count || 0) >= coupon.max_uses) { statusEl.textContent = 'This coupon has reached its usage limit.'; statusEl.style.color = '#ef4444'; btn.textContent = 'Apply'; btn.disabled = false; return; }
+
+          var subtotal = window.cart.reduce(function(s, i) { return s + (parseInt(i.price.replace(/[^0-9]/g, '')) * i.qty); }, 0);
+          if (coupon.min_order > 0 && subtotal < coupon.min_order) {
+            statusEl.textContent = 'Minimum order Tk ' + coupon.min_order + ' required for this coupon.';
+            statusEl.style.color = '#ef4444'; btn.textContent = 'Apply'; btn.disabled = false; return;
+          }
+
+          // Calculate discount amount
+          var discountAmt = 0;
+          if (coupon.discount_type === 'percentage') {
+            discountAmt = Math.round(subtotal * coupon.discount_value / 100);
+          } else {
+            discountAmt = Math.min(coupon.discount_value, subtotal);
+          }
+
+          _appliedCoupon = {
+            code: coupon.code,
+            discount_type: coupon.discount_type,
+            discount_value: coupon.discount_value,
+            discount_amount: discountAmt
+          };
+
+          statusEl.textContent = '✓ Coupon "' + coupon.code + '" applied! You save Tk ' + discountAmt.toLocaleString();
+          statusEl.style.color = '#22c55e';
+          document.getElementById('couponInput').value = coupon.code;
+          document.getElementById('couponInput').disabled = true;
+          btn.textContent = 'Applied';
+          btn.disabled = true;
+          updateCheckoutTotal();
+        } catch(e) {
+          statusEl.textContent = 'Error validating coupon.';
+          statusEl.style.color = '#ef4444';
+          btn.textContent = 'Apply';
+          btn.disabled = false;
+        }
+      };
+
+      // Allow removing applied coupon
+      document.getElementById('couponInput').onclick = function() {
+        if (_appliedCoupon) {
+          _appliedCoupon = null;
+          this.value = '';
+          this.disabled = false;
+          document.getElementById('applyCouponBtn').textContent = 'Apply';
+          document.getElementById('applyCouponBtn').disabled = false;
+          document.getElementById('couponStatus').textContent = '';
+          updateCheckoutTotal();
+        }
+      };
+
+      // ─── Delivery Zone Buttons ───
+      document.addEventListener('click', function(e) {
+        var btn = e.target.closest('.zone-btn');
+        if (!btn) return;
+        var zone = btn.getAttribute('data-zone');
+        document.querySelectorAll('.zone-btn').forEach(function(b) { b.classList.remove('on'); });
+        btn.classList.add('on');
+        document.getElementById('deliveryZone').value = zone;
+        updateCheckoutTotal();
+      });
 
       document.getElementById('checkoutBtn').onclick = function() {
         window.closeDrawer();
         setTimeout(function() {
           renderCheckoutSummary();
           document.getElementById('deliveryZone').value = '';
+          document.querySelectorAll('.zone-btn').forEach(function(b) { b.classList.remove('on'); });
           document.getElementById('payMethod').value = '';
+          document.querySelectorAll('.pay-btn').forEach(function(b) { b.classList.remove('on'); });
           document.getElementById('trxId').value = '';
+          // Reset coupon
+          _appliedCoupon = null;
+          document.getElementById('couponInput').value = '';
+          document.getElementById('couponInput').disabled = false;
+          document.getElementById('applyCouponBtn').textContent = 'Apply';
+          document.getElementById('applyCouponBtn').disabled = false;
+          document.getElementById('couponStatus').textContent = '';
+          document.getElementById('checkoutDiscountRow').classList.add('hidden');
           document.getElementById('custName').value = '';
           document.getElementById('custPhone').value = '';
           document.getElementById('custAddress').value = '';
@@ -664,9 +884,14 @@ const { title = defaultTitle } = Astro.props;
       document.getElementById('checkoutForm').onsubmit = async function(e) {
         e.preventDefault();
         var zone = document.getElementById('deliveryZone').value;
+        if (!zone) { window.showToast('Please select a delivery zone first', 'warning'); return; }
+        var payMethod = document.getElementById('payMethod').value;
+        if (zone === 'outside' && !payMethod) { window.showToast('Please select a payment method', 'warning'); return; }
         var subtotal = window.cart.reduce(function(s, i) { return s + (parseInt(i.price.replace(/[^0-9]/g, '')) * i.qty); }, 0);
         var deliveryFee = getDeliveryFee(zone);
-        var grandTotal = subtotal + deliveryFee;
+        var couponDiscount = getCouponDiscountAmount();
+        var discountedSubtotal = subtotal - couponDiscount;
+        var grandTotal = discountedSubtotal + deliveryFee;
         
         var paymentMethod = '';
         var trxId = '';
@@ -682,6 +907,8 @@ const { title = defaultTitle } = Astro.props;
           items_json: JSON.parse(JSON.stringify(window.cart)),
           subtotal: subtotal,
           delivery_fee: deliveryFee,
+          coupon_code: _appliedCoupon ? _appliedCoupon.code : null,
+          coupon_discount: couponDiscount || 0,
           total: grandTotal,
           zone: zone,
           customer_name: document.getElementById('custName').value,
@@ -705,6 +932,22 @@ const { title = defaultTitle } = Astro.props;
           localStorage.setItem('jv_orders', JSON.stringify(orders));
         }
         
+        // Increment coupon usage count
+        if (_appliedCoupon) {
+          supabaseFetch('coupons?code=eq.' + encodeURIComponent(_appliedCoupon.code) + '&select=used_count')
+            .then(function(r) { return r.json(); })
+            .then(function(data) {
+              if (data && data.length > 0) {
+                var current = (data[0].used_count || 0) + 1;
+                supabaseFetch('coupons?code=eq.' + encodeURIComponent(_appliedCoupon.code), {
+                  method: 'PATCH',
+                  headers: { 'Prefer': 'return=minimal' },
+                  body: JSON.stringify({ used_count: current })
+                }).catch(function() {});
+              }
+            }).catch(function() {});
+        }
+
         window.cart = [];
         window.saveCart();
         window.showToast('Order Placed! ID: ' + orderId, 'success');

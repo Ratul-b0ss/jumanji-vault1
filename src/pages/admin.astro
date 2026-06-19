@@ -261,6 +261,7 @@ import '../styles/global.css';
           <button class="sb-lk on" data-tab="ordersTab"><span>📦</span><span>Orders</span></button>
           <button class="sb-lk" data-tab="invTab"><span>🛡️</span><span>Products</span></button>
           <button class="sb-lk" data-tab="catTab"><span>🏷️</span><span>Categories</span></button>
+          <button class="sb-lk" data-tab="couponTab"><span>🎟️</span><span>Coupons</span></button>
           <button class="sb-lk" data-tab="setTab"><span>⚙️</span><span>Settings</span></button>
           <a href="/" class="sb-lk" style="margin-top:16px;color:var(--cyan);">🏠 Back to Home</a>
         </nav>
@@ -313,6 +314,14 @@ import '../styles/global.css';
             <div class="cc-grid" id="catList"></div>
           </section>
 
+          <section id="couponTab" class="tab">
+            <div class="flex items-center justify-between gap-4 mb-6 flex-wrap">
+              <div><h2 class="display-md mb-1">Coupons</h2><p class="body-sm text-accents-5">Manage discount codes.</p></div>
+              <button onclick="window.showCouponModal()" class="btn-sm cyan" style="background:var(--cyan-soft);">+ New Coupon</button>
+            </div>
+            <div id="couponList" class="cl"></div>
+          </section>
+
           <section id="setTab" class="tab">
             <div class="mb-6"><h2 class="display-md mb-1">System Settings</h2><p class="body-sm text-accents-5">Configure store parameters.</p></div>
             <div class="set">
@@ -347,11 +356,63 @@ import '../styles/global.css';
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9V5a2 2 0 012-2h4.5a2 2 0 011.8 1.1l.9 1.8a2 2 0 001.8 1.1H20a2 2 0 012 2v9a2 2 0 01-2 2H6a2 2 0 01-2-2V9z"/></svg>
           <span>Categories</span>
         </button>
+        <button class="bn-lk" data-tab="couponTab" aria-label="Coupons">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12V8H6a2 2 0 01-2-2c0-1.1.9-2 2-2h12v4"/><path d="M4 6v12c0 1.1.9 2 2 2h14v-4"/><path d="M18 12a2 2 0 000 4h4v-4h-4z"/></svg>
+          <span>Coupons</span>
+        </button>
         <button class="bn-lk" data-tab="setTab" aria-label="Settings">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
           <span>Settings</span>
         </button>
       </nav>
+    </div>
+
+    <!-- ── Coupon Form Modal ── -->
+    <div id="cModal" class="modal-overlay hidden">
+      <div class="modal-content card max-w-md w-full">
+        <div class="flex items-center justify-between mb-6 border-b border-accents-2 pb-5">
+          <h3 id="cModalTitle" class="display-sm">New Coupon</h3>
+          <button onclick="window.closeCouponModal()" class="text-accents-5 hover:text-white text-2xl transition-colors">&times;</button>
+        </div>
+        <form id="cForm" class="space-y-5">
+          <input type="hidden" id="cEditId" value="" />
+          <div>
+            <label class="caption-mono text-accents-5 mb-2 block text-[10px]">Coupon Code</label>
+            <input type="text" id="cCode" class="form-input uppercase" placeholder="SAVE10" required />
+          </div>
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label class="caption-mono text-accents-5 mb-2 block text-[10px]">Type</label>
+              <select id="cType" class="form-input">
+                <option value="percentage">Percentage (%)</option>
+                <option value="fixed">Fixed (Tk)</option>
+              </select>
+            </div>
+            <div>
+              <label class="caption-mono text-accents-5 mb-2 block text-[10px]">Value</label>
+              <input type="number" id="cValue" class="form-input" placeholder="10" min="1" required />
+            </div>
+          </div>
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label class="caption-mono text-accents-5 mb-2 block text-[10px]">Min Order (Tk)</label>
+              <input type="number" id="cMin" class="form-input" placeholder="0" min="0" />
+            </div>
+            <div>
+              <label class="caption-mono text-accents-5 mb-2 block text-[10px]">Max Uses</label>
+              <input type="number" id="cMax" class="form-input" placeholder="Unlimited" min="0" />
+            </div>
+          </div>
+          <div>
+            <label class="caption-mono text-accents-5 mb-2 block text-[10px]">Expires At</label>
+            <input type="date" id="cExpires" class="form-input" />
+          </div>
+          <div class="flex gap-4 pt-4 border-t border-accents-2">
+            <button type="button" onclick="window.closeCouponModal()" class="btn-secondary flex-1 !h-12 text-sm">Cancel</button>
+            <button type="submit" class="btn-primary flex-1 !h-12 text-sm">Save Coupon</button>
+          </div>
+        </form>
+      </div>
     </div>
 
     <!-- ── Confirm Delete Modal ── -->
@@ -581,7 +642,7 @@ import '../styles/global.css';
       });
 
       // ─── Data ───
-      var orders = [], products = [], categories = [];
+      var orders = [], products = [], categories = [], coupons = [];
       var settings = { contact: '', bkash: '', nagad: '', facebook: '', instagram: '', fee_ctg: 70, fee_outside: 130 };
 
       async function load() {
@@ -599,15 +660,17 @@ import '../styles/global.css';
         if (catList) catList.innerHTML = spinner;
 
         try {
-          var [p, c, o, s] = await Promise.all([
+          var [p, c, o, s, cp] = await Promise.all([
             supabaseRequest('GET', 'products?order=id.asc').catch(function() { return []; }),
             supabaseRequest('GET', 'categories?order=name.asc').catch(function() { return []; }),
             supabaseRequest('GET', 'orders?order=created_at.desc').catch(function() { return []; }),
-            supabaseRequest('GET', 'settings?select=*&limit=1').catch(function() { return []; })
+            supabaseRequest('GET', 'settings?select=*&limit=1').catch(function() { return []; }),
+            supabaseRequest('GET', 'coupons?order=code.asc').catch(function() { return []; })
           ]);
           products = Array.isArray(p) ? p : [];
           categories = Array.isArray(c) ? c : [];
           orders = Array.isArray(o) ? o : [];
+          coupons = Array.isArray(cp) ? cp : [];
           var sRow = Array.isArray(s) && s.length > 0 ? s[0] : {};
           settings = sRow;
  
@@ -623,7 +686,7 @@ import '../styles/global.css';
         } catch(e) { console.error(e); }
       }
 
-      function render() { renderStats(); renderOrders(); renderInv(); renderCats(); updCats(); }
+      function render() { renderStats(); renderOrders(); renderInv(); renderCats(); renderCoupons(); updCats(); }
 
       function renderStats() {
         var rev = orders.reduce(function(s, o) { return o.status !== 'cancelled' ? s + (Number(o.total)||0) : s; }, 0);
@@ -822,6 +885,113 @@ import '../styles/global.css';
           settings = body;
           window.showToast('Settings saved', 'success');
         } catch(err) { window.showToast('Failed to save', 'error'); }
+      };
+
+      // ─── Coupon Management ───
+      var cModal = document.getElementById('cModal');
+      var cForm = document.getElementById('cForm');
+
+      function renderCoupons() {
+        var list = document.getElementById('couponList');
+        if (!list) return;
+        if (!coupons.length) { list.innerHTML = '<div class="empty"><span class="empty-e">🎟️</span><span class="empty-t">No coupons yet.</span></div>'; return; }
+
+        list.innerHTML = coupons.map(function(c, i) {
+          var isActive = c.active !== false;
+          var expiry = c.expires_at ? new Date(c.expires_at).toLocaleDateString() : 'Never';
+          var typeLabel = c.discount_type === 'percentage' ? c.discount_value + '%' : 'Tk ' + c.discount_value;
+          var used = c.used_count || 0;
+          var maxStr = c.max_uses > 0 ? used + '/' + c.max_uses : used + '/∞';
+          return '<div class="cc">' +
+            '<div class="cc-l" style="flex-wrap:wrap;">' +
+              '<div class="cc-i" style="background:' + (isActive ? 'rgba(80,227,194,0.08)' : 'rgba(239,68,68,0.08)') + ';border-color:' + (isActive ? 'rgba(80,227,194,0.12)' : 'rgba(239,68,68,0.12)') + ';color:' + (isActive ? '#50e3c2' : '#ef4444') + ';">' + c.code.charAt(0) + '</div>' +
+              '<div><span class="cc-n">' + c.code + '</span>' +
+              '<div style="display:flex;gap:8px;font-size:10px;color:#666;margin-top:2px;flex-wrap:wrap;">' +
+                '<span>' + typeLabel + '</span>' +
+                '<span>Min: Tk ' + (c.min_order || 0) + '</span>' +
+                '<span>Uses: ' + maxStr + '</span>' +
+                '<span>Exp: ' + expiry + '</span>' +
+              '</div></div>' +
+            '</div>' +
+            '<div style="display:flex;gap:4px;flex-shrink:0;">' +
+              '<button onclick="window.toggleCoupon(' + i + ')" class="btn-sm ' + (isActive ? 'cyan' : 'danger') + '">' + (isActive ? 'Active' : 'Paused') + '</button>' +
+              '<button onclick="window.deleteCoupon(' + i + ')" class="btn-sm danger">Del</button>' +
+            '</div></div>';
+        }).join('');
+      }
+
+      window.toggleCoupon = async function(i) {
+        var c = coupons[i];
+        var newActive = c.active === false ? true : false;
+        try {
+          await supabaseRequest('PATCH', 'coupons?id=eq.' + c.id, { active: newActive }, { Prefer: 'return=minimal' });
+          coupons[i].active = newActive;
+          render();
+          window.showToast('Coupon ' + (newActive ? 'activated' : 'paused'), 'success');
+        } catch(e) { window.showToast('Failed to update coupon', 'error'); }
+      };
+
+      window.deleteCoupon = async function(i) {
+        var confirmed = await window.showConfirmModal('Delete coupon "' + coupons[i].code + '"?');
+        if (!confirmed) return;
+        try {
+          await supabaseRequest('DELETE', 'coupons?id=eq.' + coupons[i].id, null, { Prefer: 'return=minimal' });
+          coupons.splice(i, 1);
+          render();
+          window.showToast('Coupon deleted', 'success');
+        } catch(e) { window.showToast('Failed to delete', 'error'); }
+      };
+
+      window.showCouponModal = function() {
+        document.getElementById('cEditId').value = '';
+        cForm.reset();
+        document.getElementById('cType').value = 'percentage';
+        cModal.classList.remove('hidden');
+        document.body.classList.add('no-scroll');
+      };
+
+      window.closeCouponModal = function() {
+        cModal.classList.add('hidden');
+        document.body.classList.remove('no-scroll');
+      };
+
+      cForm.onsubmit = async function(e) {
+        e.preventDefault();
+        var editId = document.getElementById('cEditId').value;
+        var code = document.getElementById('cCode').value.toUpperCase().trim();
+        var body = {
+          code: code,
+          discount_type: document.getElementById('cType').value,
+          discount_value: Number(document.getElementById('cValue').value),
+          min_order: Number(document.getElementById('cMin').value) || 0,
+          max_uses: Number(document.getElementById('cMax').value) || 0,
+          expires_at: document.getElementById('cExpires').value ? new Date(document.getElementById('cExpires').value).toISOString() : null,
+          active: true
+        };
+
+        var btn = cForm.querySelector('button[type="submit"]');
+        btn.disabled = true;
+        btn.textContent = 'Saving...';
+
+        try {
+          if (!editId) {
+            var created = await supabaseRequest('POST', 'coupons', body);
+            if (created && created.length > 0) coupons.push(created[0]);
+            else coupons.push(body);
+          } else {
+            await supabaseRequest('PATCH', 'coupons?id=eq.' + editId, body, { Prefer: 'return=minimal' });
+            var idx = coupons.findIndex(function(c) { return c.id == editId; });
+            if (idx >= 0) coupons[idx] = { ...coupons[idx], ...body };
+          }
+          render();
+          window.closeCouponModal();
+          window.showToast('Coupon saved', 'success');
+        } catch(err) {
+          window.showToast('Failed to save coupon', 'error');
+        } finally {
+          btn.disabled = false;
+          btn.textContent = 'Save Coupon';
+        }
       };
 
       window.clearOrders = async function() {
