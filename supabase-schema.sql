@@ -9,6 +9,7 @@ CREATE TABLE IF NOT EXISTS products (
   discount_price TEXT,
   image TEXT NOT NULL,
   category TEXT NOT NULL,
+  in_stock BOOLEAN DEFAULT TRUE,
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
@@ -91,4 +92,12 @@ INSERT INTO products (name, price, image, category) VALUES
 /*
 ALTER TABLE settings ADD COLUMN facebook TEXT NOT NULL DEFAULT '';
 ALTER TABLE settings ADD COLUMN instagram TEXT NOT NULL DEFAULT '';
+*/
+
+-- ═══════════════════════════════════════════
+-- MIGRATION: Add in_stock column to products
+-- ═══════════════════════════════════════════
+-- Run this in the Supabase SQL Editor to enable Stock Out control:
+/*
+ALTER TABLE products ADD COLUMN IF NOT EXISTS in_stock BOOLEAN DEFAULT TRUE;
 */

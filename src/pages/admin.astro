@@ -108,6 +108,7 @@ import '../styles/global.css';
       .tab.on { display: block; }
       .status-select { background: transparent; border: 1px solid #333; border-radius: 6px; color: #fff; padding: 4px 10px; font-size: 11px; cursor: pointer; outline: none; }
       .status-select:focus { border-color: #50e3c2; }
+      @keyframes dashSpin { to { transform: rotate(360deg); } }
     </style>
   </head>
   <body>
@@ -229,6 +230,10 @@ import '../styles/global.css';
               <div class="grid grid-cols-2 gap-4">
                 <div><label class="caption-mono text-accents-5 mb-2 block text-[10px]">Price</label><input type="number" id="fPrice" class="form-input" placeholder="0" required /></div>
                 <div><label class="caption-mono text-accents-5 mb-2 block text-[10px]">Sale Price</label><input type="number" id="fDisc" class="form-input" placeholder="Optional" /></div>
+              </div>
+              <div class="flex items-center gap-2 pt-2">
+                <input type="checkbox" id="fInStock" class="w-4 h-4 rounded border-accents-2 bg-accents-1 text-cyan focus:ring-cyan/50 focus:ring-offset-black accent-cyan cursor-pointer" checked />
+                <label for="fInStock" class="caption-mono text-accents-5 text-[10px] select-none cursor-pointer">In Stock</label>
               </div>
             </div>
             <div class="space-y-6">
@@ -374,6 +379,19 @@ import '../styles/global.css';
       var settings = { contact: '', bkash: '', nagad: '', facebook: '', instagram: '', fee_ctg: 70, fee_outside: 130 };
 
       async function load() {
+        // Show glowing loader spinners inside dashboard tabs during Supabase fetching
+        var spinner = '<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 20px;gap:12px;width:100%;grid-column:1/-1;">' +
+          '<div style="width:24px;height:24px;border:2px solid rgba(80,227,194,0.08);border-top-color:var(--cyan);border-radius:50%;animation:dashSpin 0.8s linear infinite;box-shadow:0 0 10px rgba(80,227,194,0.15);"></div>' +
+          '<span class="caption-mono text-accents-4 text-[9px] tracking-widest">CONNECTING TO VAULT...</span>' +
+          '</div>';
+        
+        var ordersBody = document.getElementById('ordersBody');
+        if (ordersBody) ordersBody.innerHTML = spinner;
+        var invBody = document.getElementById('invBody');
+        if (invBody) invBody.innerHTML = spinner;
+        var catList = document.getElementById('catList');
+        if (catList) catList.innerHTML = spinner;
+
         try {
           var [p, c, o, s] = await Promise.all([
             supabaseRequest('GET', 'products?order=id.asc').catch(function() { return []; }),
@@ -386,7 +404,7 @@ import '../styles/global.css';
           orders = Array.isArray(o) ? o : [];
           var sRow = Array.isArray(s) && s.length > 0 ? s[0] : {};
           settings = sRow;
-
+ 
           document.getElementById('fContact').value = settings.contact || '';
           document.getElementById('fBkash').value = settings.bkash || '';
           document.getElementById('fNagad').value = settings.nagad || '';
@@ -394,7 +412,7 @@ import '../styles/global.css';
           document.getElementById('fInstagram').value = settings.instagram || '';
           document.getElementById('fFeeCtg').value = settings.fee_ctg || '70';
           document.getElementById('fFeeOutside').value = settings.fee_outside || '130';
-
+ 
           render();
         } catch(e) { console.error(e); }
       }
@@ -409,17 +427,40 @@ import '../styles/global.css';
 
       window.deleteOrder = async function(i) {
         if (!confirm('Delete order?')) return;
-        try { await supabaseRequest('DELETE', 'orders?id=eq.' + encodeURIComponent(orders[i].id), null, { Prefer: 'return=minimal' }); orders.splice(i, 1); render(); window.showToast('Order deleted', 'success'); }
-        catch(e) { window.showToast('Failed to delete', 'error'); }
+        var originalOrders = [...orders];
+        var deletedOrder = orders[i];
+        
+        // Optimistic Update
+        orders.splice(i, 1);
+        render();
+        window.showToast('Deleting order...', 'info');
+
+        try {
+          await supabaseRequest('DELETE', 'orders?id=eq.' + encodeURIComponent(deletedOrder.id), null, { Prefer: 'return=minimal' });
+          window.showToast('Order deleted successfully', 'success');
+        } catch(e) {
+          orders = originalOrders;
+          render();
+          window.showToast('Failed to delete order', 'error');
+        }
       };
 
       window.updateOrderStatus = async function(i, status) {
+        var oldStatus = orders[i].status;
+
+        // Optimistic Update
+        orders[i].status = status;
+        render();
+        window.showToast('Updating status...', 'info');
+
         try {
           await supabaseRequest('PATCH', 'orders?id=eq.' + encodeURIComponent(orders[i].id), { status: status }, { Prefer: 'return=minimal' });
-          orders[i].status = status;
-          render();
           window.showToast('Order status updated', 'success');
-        } catch(e) { window.showToast('Failed to update', 'error'); }
+        } catch(e) {
+          orders[i].status = oldStatus;
+          render();
+          window.showToast('Failed to update status', 'error');
+        }
       };
 
       function renderOrders() {
@@ -465,8 +506,22 @@ import '../styles/global.css';
 
       window.deleteProduct = async function(i) {
         if (!confirm('Delete product?')) return;
-        try { await supabaseRequest('DELETE', 'products?id=eq.' + products[i].id, null, { Prefer: 'return=minimal' }); products.splice(i, 1); render(); window.showToast('Product deleted', 'success'); }
-        catch(e) { window.showToast('Failed to delete', 'error'); }
+        var originalProducts = [...products];
+        var deletedProduct = products[i];
+
+        // Optimistic Update
+        products.splice(i, 1);
+        render();
+        window.showToast('Deleting product...', 'info');
+
+        try {
+          await supabaseRequest('DELETE', 'products?id=eq.' + deletedProduct.id, null, { Prefer: 'return=minimal' });
+          window.showToast('Product deleted successfully', 'success');
+        } catch(e) {
+          products = originalProducts;
+          render();
+          window.showToast('Failed to delete product', 'error');
+        }
       };
 
       function renderInv() {
@@ -475,9 +530,12 @@ import '../styles/global.css';
         if (!products.length) { body.innerHTML = '<div class="empty"><span class="empty-e">🛡️</span><span class="empty-t">No products.</span></div>'; return; }
         body.innerHTML = products.map(function(p,i) {
           var hd = p.discount_price && p.discount_price !== p.price;
+          var stockLabel = p.in_stock === false 
+            ? '<span style="color:#ef4444;font-size:10px;font-weight:600;margin-left:8px;text-transform:uppercase;">(Out of Stock)</span>' 
+            : '';
           return '<div class="pc">' +
             '<img src="' + p.image + '" class="pc-img" />' +
-            '<div class="pc-info"><div class="pc-name">' + p.name + '</div><span class="pc-cat">' + p.category + '</span></div>' +
+            '<div class="pc-info"><div class="pc-name">' + p.name + stockLabel + '</div><span class="pc-cat">' + p.category + '</span></div>' +
             (hd ? '<div class="pc-price sold">' + p.discount_price + '<span class="pc-old">' + p.price + '</span></div>' : '<div class="pc-price">' + p.price + '</div>') +
             '<div class="pc-acts">' +
               '<button onclick="editProd(' + i + ')" class="btn-sm cyan">Edit</button>' +
@@ -495,6 +553,7 @@ import '../styles/global.css';
         document.getElementById('fPrice').value = p.price.replace('Tk ','');
         document.getElementById('fDisc').value = p.discount_price ? p.discount_price.replace('Tk ','') : '';
         document.getElementById('fImg').value = p.image.startsWith('data:') ? '' : p.image;
+        document.getElementById('fInStock').checked = p.in_stock !== false;
         updatePrev(p.image);
         document.getElementById('pModal').classList.remove('hidden');
         document.body.classList.add('no-scroll');
@@ -614,7 +673,9 @@ import '../styles/global.css';
       };
 
       window.showProductModal = function() {
-        document.getElementById('editIx').value = '-1'; pForm.reset(); updatePrev(''); modal.classList.remove('hidden');
+        document.getElementById('editIx').value = '-1'; pForm.reset(); updatePrev(''); 
+        document.getElementById('fInStock').checked = true;
+        modal.classList.remove('hidden');
         document.body.classList.add('no-scroll');
       };
       window.closeProductModal = function() { modal.classList.add('hidden'); document.body.classList.remove('no-scroll'); };
@@ -630,21 +691,45 @@ import '../styles/global.css';
           category: document.getElementById('fCat').value,
           price: 'Tk ' + document.getElementById('fPrice').value,
           discount_price: disc ? 'Tk ' + disc : null,
-          image: finImg
+          image: finImg,
+          in_stock: document.getElementById('fInStock').checked
         };
+
+        var submitBtn = pForm.querySelector('button[type="submit"]');
+        var originalBtnText = submitBtn.textContent;
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Saving...';
+
         try {
           if (ix === -1) {
             var created = await supabaseRequest('POST', 'products', prod);
             if (created && created.length > 0) products.push(created[0]);
             else products.push(prod);
           } else {
-            await supabaseRequest('PATCH', 'products?id=eq.' + products[ix].id, prod, { Prefer: 'return=minimal' });
+            // Optimistic edit
+            var originalProd = { ...products[ix] };
             products[ix] = { ...products[ix], ...prod };
+            render();
+            window.closeProductModal();
+
+            await supabaseRequest('PATCH', 'products?id=eq.' + products[ix].id, prod, { Prefer: 'return=minimal' });
           }
-          render();
-          window.closeProductModal();
-          window.showToast('Product saved', 'success');
-        } catch(err) { window.showToast('Failed to save product', 'error'); }
+          
+          if (ix === -1) {
+            render();
+            window.closeProductModal();
+          }
+          window.showToast('Product saved successfully', 'success');
+        } catch(err) {
+          window.showToast('Failed to save product', 'error');
+          if (ix !== -1) {
+            products[ix] = originalProd;
+            render();
+          }
+        } finally {
+          submitBtn.disabled = false;
+          submitBtn.textContent = originalBtnText;
+        }
       };
 
       function init() { load(); }

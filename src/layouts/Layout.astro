@@ -28,6 +28,25 @@ const { title = defaultTitle } = Astro.props;
     <title>{title || defaultTitle}</title>
   </head>
   <body>
+    <!-- ── Premium Page Loader/Splash Screen ── -->
+    <div id="pageLoader" class="page-loader">
+      <div class="loader-content">
+        <div class="loader-brick-wrapper">
+          <div class="loader-brick bg-cyan"></div>
+          <div class="loader-brick bg-white"></div>
+          <div class="loader-brick bg-cyan"></div>
+        </div>
+        <div class="loader-logo">
+          <span class="logo-b">B</span>
+          <span class="logo-text">BRICK<span class="text-cyan">RUSH</span></span>
+        </div>
+        <div class="loader-bar">
+          <div class="loader-bar-fill"></div>
+        </div>
+        <div class="loader-status caption-mono text-[9px]">CONNECTING TO VAULT...</div>
+      </div>
+    </div>
+
     <!-- ── Toast Container ── -->
     <div id="toastContainer" style="position:fixed;bottom:24px;left:50%;transform:translateX(-50%);z-index:9999;display:flex;flex-direction:column;gap:8px;pointer-events:none;width:auto;max-width:90vw;"></div>
 
@@ -144,6 +163,118 @@ const { title = defaultTitle } = Astro.props;
     <main><slot /></main>
 
     <style>
+      /* ── Page Loader Styles ── */
+      .page-loader {
+        position: fixed;
+        inset: 0;
+        z-index: 99999;
+        background-color: #080808;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.4s;
+      }
+      .page-loader.fade-out {
+        opacity: 0;
+        visibility: hidden;
+      }
+      .loader-content {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 20px;
+      }
+      /* Animated Lego Brick Grid */
+      .loader-brick-wrapper {
+        display: flex;
+        gap: 6px;
+        margin-bottom: 4px;
+      }
+      .loader-brick {
+        width: 14px;
+        height: 14px;
+        border-radius: 2px;
+        position: relative;
+        animation: brickPulse 1.2s infinite ease-in-out;
+      }
+      .loader-brick::after {
+        content: '';
+        position: absolute;
+        top: -3px;
+        left: 2px;
+        width: 4px;
+        height: 3px;
+        background: inherit;
+        border-radius: 1px 1px 0 0;
+        box-shadow: 6px 0 0 inherit;
+      }
+      .loader-brick:nth-child(1) { animation-delay: 0s; }
+      .loader-brick:nth-child(2) { animation-delay: 0.2s; }
+      .loader-brick:nth-child(3) { animation-delay: 0.4s; }
+
+      @keyframes brickPulse {
+        0%, 100% { transform: scale(1); opacity: 0.25; filter: drop-shadow(0 0 0px var(--cyan)); }
+        50% { transform: scale(1.15); opacity: 1; filter: drop-shadow(0 0 6px var(--cyan)); }
+      }
+      .loader-logo {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .loader-logo .logo-b {
+        width: 28px;
+        height: 28px;
+        background: var(--cyan);
+        color: #000;
+        font-weight: 800;
+        font-size: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 6px;
+        box-shadow: 0 0 15px rgba(80, 227, 194, 0.3);
+      }
+      .loader-logo .logo-text {
+        font-family: 'JetBrains Mono', monospace;
+        font-weight: 700;
+        font-size: 15px;
+        letter-spacing: -0.05em;
+        color: #fff;
+      }
+      .loader-bar {
+        width: 140px;
+        height: 2px;
+        background: rgba(255, 255, 255, 0.08);
+        border-radius: 1px;
+        overflow: hidden;
+        position: relative;
+      }
+      .loader-bar-fill {
+        height: 100%;
+        width: 30%;
+        background: var(--cyan);
+        border-radius: 1px;
+        position: absolute;
+        left: 0;
+        animation: fillProgress 1.6s infinite cubic-bezier(0.65, 0.05, 0.36, 1);
+        box-shadow: 0 0 6px var(--cyan);
+      }
+      @keyframes fillProgress {
+        0% { left: -30%; width: 30%; }
+        50% { width: 40%; }
+        100% { left: 100%; width: 30%; }
+      }
+      .loader-status {
+        color: var(--accents-4);
+        letter-spacing: 0.15em;
+        margin-top: 2px;
+        animation: pulseText 1.5s infinite ease-in-out;
+      }
+      @keyframes pulseText {
+        0%, 100% { opacity: 0.4; }
+        50% { opacity: 0.8; }
+      }
+
       /* ── Toast Styles ── */
       .toast {
         pointer-events: auto;
@@ -179,6 +310,22 @@ const { title = defaultTitle } = Astro.props;
     </style>
 
     <script is:inline>
+      // ─── Page Loader Dismissal ───
+      window.dismissLoader = function() {
+        var loader = document.getElementById('pageLoader');
+        if (loader) {
+          loader.classList.add('fade-out');
+          setTimeout(function() {
+            if (loader.parentNode) loader.parentNode.removeChild(loader);
+          }, 500);
+        }
+      };
+
+      // Auto-dismiss safety timer (3.5 seconds)
+      setTimeout(function() {
+        if (window.dismissLoader) window.dismissLoader();
+      }, 3500);
+
       // ─── Global Toast System ───
       window.showToast = function(message, type) {
         type = type || 'info';
@@ -214,8 +361,57 @@ const { title = defaultTitle } = Astro.props;
       window.cart = [];
       try { window.cart = JSON.parse(localStorage.getItem('jv_cart') || '[]'); } catch (e) {}
 
+      // ─── Product Image Cache Helper ───
+      var productImageCache = {};
+      window.getProductImage = function(name) {
+        if (!name) return 'https://placehold.co/400x533/111/50e3c2?text=Unit&font=inter';
+        if (productImageCache[name]) return productImageCache[name];
+
+        // 1. Try window.allProducts
+        if (window.allProducts && Array.isArray(window.allProducts)) {
+          var found = window.allProducts.find(function(p) { return p.name === name; });
+          if (found && found.image) {
+            productImageCache[name] = found.image;
+            return found.image;
+          }
+        }
+
+        // 2. Try localStorage cached products
+        try {
+          var cached = localStorage.getItem('jv_supabase_products');
+          if (cached) {
+            var products = JSON.parse(cached);
+            if (Array.isArray(products)) {
+              var found = products.find(function(p) { return p.name === name; });
+              if (found && found.image) {
+                productImageCache[name] = found.image;
+                return found.image;
+              }
+            }
+          }
+        } catch (e) {}
+
+        return 'https://placehold.co/400x533/111/50e3c2?text=Unit&font=inter';
+      };
+
       window.saveCart = function() {
-        localStorage.setItem('jv_cart', JSON.stringify(window.cart));
+        try {
+          // Clean cart data before saving to localStorage to prevent QuotaExceededError from base64 images
+          var cleanCart = window.cart.map(function(item) {
+            var clone = { ...item };
+            delete clone.image;
+            return clone;
+          });
+          localStorage.setItem('jv_cart', JSON.stringify(cleanCart));
+        } catch (e) {
+          console.error('Failed to save cart to localStorage:', e);
+          try {
+            localStorage.removeItem('jv_settings_cache');
+            localStorage.setItem('jv_cart', JSON.stringify(cleanCart));
+          } catch(e2) {
+            console.error('Clear failed to resolve quota:', e2);
+          }
+        }
         window.updateUI();
       };
 
@@ -239,9 +435,21 @@ const { title = defaultTitle } = Astro.props;
 
       window.addToCart = function(product) {
         if (!product || !product.name) return;
+
+        // Cache image reference in memory if it was passed
+        if (product.image) {
+          productImageCache[product.name] = product.image;
+        }
+
         var existing = window.cart.find(function(i) { return i.name === product.name; });
-        if (existing) existing.qty++;
-        else window.cart.push({ ...product, qty: 1 });
+        if (existing) {
+          existing.qty++;
+        } else {
+          var cartItem = { ...product };
+          delete cartItem.image; // Do not store base64 image in cart memory/storage
+          cartItem.qty = 1;
+          window.cart.push(cartItem);
+        }
         window.saveCart();
         window.showToast(product.name + ' added to cart!', 'success');
       };
@@ -284,9 +492,10 @@ const { title = defaultTitle } = Astro.props;
         content.innerHTML = window.cart.map(function(item, i) {
           var p = parseInt(item.price.replace(/[^0-9]/g, '')) || 0;
           total += p * item.qty;
+          var itemImg = item.image || window.getProductImage(item.name);
           return '<div class="flex flex-col gap-4 mb-6 border-b border-accents-2 pb-4 last:border-b-0 last:pb-0">' +
             '<div class="flex items-start gap-4">' +
-              '<img src="' + item.image + '" class="w-16 h-16 object-contain bg-accents-1 rounded" />' +
+              '<img src="' + itemImg + '" class="w-16 h-16 object-contain bg-accents-1 rounded" />' +
               '<div class="flex-1"><p class="text-xs font-medium text-white">' + item.name + '</p><p class="text-[10px] text-accents-5">' + item.price + ' each</p></div>' +
               '<button onclick="window.removeItem(' + i + ')" class="text-error text-[10px]">Remove</button>' +
             '</div>' +

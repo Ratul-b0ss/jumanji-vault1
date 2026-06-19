@@ -39,7 +39,30 @@ import Layout from '../layouts/Layout.astro';
 
   <section id="products" class="py-16 sm:py-24">
     <div class="container">
-      <div id="productGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 sm:gap-6 justify-center"></div>
+      <div id="productGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 sm:gap-6 justify-center">
+        <!-- ── Skeleton Loader Cards (Engaging Placeholder while fetching data) ── -->
+        <script is:inline>
+          (function() {
+            var grid = document.currentScript.parentNode;
+            var skeletons = '';
+            for (var i = 0; i < 10; i++) {
+              skeletons += '<div class="card animate-pulse flex flex-col h-full opacity-40 select-none pointer-events-none">' +
+                '<div class="aspect-[3/4] rounded-sm bg-accents-2 mb-3 flex-shrink-0"></div>' +
+                '<div class="flex flex-col flex-1 justify-between gap-2">' +
+                  '<div>' +
+                    '<div class="h-3 bg-accents-2 rounded w-3/4 mb-2"></div>' +
+                    '<div class="h-3 bg-accents-2 rounded w-1/2"></div>' +
+                  '</div>' +
+                  '<div class="flex items-center justify-between mt-auto pt-2">' +
+                    '<div class="h-3.5 bg-accents-2 rounded w-1/3"></div>' +
+                  '</div>' +
+                  '<div class="w-full mt-2 h-8 rounded-full bg-accents-2"></div>' +
+                '</div></div>';
+            }
+            grid.innerHTML = skeletons;
+          })();
+        </script>
+      </div>
     </div>
   </section>
 
@@ -170,6 +193,7 @@ import Layout from '../layouts/Layout.astro';
 
   var currentCategory = 'All';
   var allProducts = [];
+  window.allProducts = allProducts;
 
   // ─── Load Products from Supabase ───
   async function loadProducts() {
@@ -178,20 +202,30 @@ import Layout from '../layouts/Layout.astro';
       var data = await res.json();
       if (Array.isArray(data) && data.length > 0) {
         allProducts = data;
+        window.allProducts = data;
         // Cache in localStorage for offline
         localStorage.setItem('jv_supabase_products', JSON.stringify(data));
       } else {
         allProducts = [];
+        window.allProducts = [];
       }
     } catch(e) {
       // Fallback to cached products
       try {
         var cached = localStorage.getItem('jv_supabase_products');
-        if (cached) allProducts = JSON.parse(cached);
+        if (cached) {
+          allProducts = JSON.parse(cached);
+          window.allProducts = allProducts;
+        }
       } catch(e2) {}
     }
     renderFilters();
     renderProducts();
+
+    // ─── Dismiss Page Loader ───
+    if (window.dismissLoader) {
+      window.dismissLoader();
+    }
   }
 
   function renderFilters() {
@@ -233,11 +267,20 @@ import Layout from '../layouts/Layout.astro';
       var hasDiscount = pDiscount && pDiscount !== pPrice;
       var displayPrice = hasDiscount ? pDiscount : pPrice;
       var pImage = p.image || 'https://placehold.co/400x533/111/50e3c2?text=Unit&font=inter';
+      var isOut = p.in_stock === false;
 
-      return '<div class="card group cursor-pointer animate-fade-in flex flex-col h-full">' +
+      var stockBadge = isOut 
+        ? '<div class="absolute top-2 right-2 z-10 bg-[#ee0000] text-white text-[9px] font-bold px-2 py-0.5 rounded-full uppercase tracking-tighter shadow-lg">Stock Out</div>' 
+        : '';
+      var btnHtml = isOut
+        ? '<button class="w-full mt-2 py-2 rounded-full bg-accents-2 text-accents-4 text-[11px] font-bold uppercase tracking-wider cursor-not-allowed pointer-events-none" disabled>Stock Out</button>'
+        : '<button class="w-full mt-2 py-2 rounded-full bg-white text-black text-[11px] font-bold uppercase tracking-wider hover:bg-cyan hover:text-black transition-all duration-200" onclick="window.addToCart({name:\'' + pName + '\', price:\'' + displayPrice + '\', image:\'' + pImage + '\'}); event.stopPropagation();">Add to Cart</button>';
+
+      return '<div class="card group cursor-pointer animate-fade-in flex flex-col h-full ' + (isOut ? 'opacity-85' : '') + '">' +
         '<div class="aspect-[3/4] rounded-sm bg-accents-1 overflow-hidden relative mb-3 flex-shrink-0">' +
           (hasDiscount ? '<div class="absolute top-2 left-2 z-10 bg-cyan text-black text-[9px] font-bold px-2 py-0.5 rounded-full uppercase tracking-tighter shadow-lg">Sale</div>' : '') +
-          '<img src="' + pImage + '" class="w-full h-full object-contain group-hover:scale-110 transition-transform duration-700 ease-out" loading="lazy" />' +
+          stockBadge +
+          '<img src="' + pImage + '" class="w-full h-full object-contain group-hover:scale-110 transition-transform duration-700 ease-out ' + (isOut ? 'opacity-40' : '') + '" loading="lazy" />' +
           '<div class="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"></div>' +
           '<button class="absolute bottom-2.5 right-2.5 w-7 h-7 rounded-full bg-black/70 text-white flex items-center justify-center shadow-lg ring-1 ring-white/10 hover:bg-cyan hover:text-black hover:ring-cyan/50 transition-all duration-200 z-20 backdrop-blur-sm" aria-label="Zoom" onclick="window.openZoom(\'' + pImage + '\'); event.stopPropagation();">' +
             '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" /><line x1="11" y1="8" x2="11" y2="14" /><line x1="8" y1="11" x2="14" y2="11" /></svg>' +
@@ -251,7 +294,7 @@ import Layout from '../layouts/Layout.astro';
               (hasDiscount ? '<span class="text-[9px] text-accents-4 line-through mt-0.5">' + pPrice + '</span>' : '') +
             '</div>' +
           '</div>' +
-          '<button class="w-full mt-2 py-2 rounded-full bg-white text-black text-[11px] font-bold uppercase tracking-wider hover:bg-cyan hover:text-black transition-all duration-200" onclick="window.addToCart({name:\'' + pName + '\', price:\'' + displayPrice + '\', image:\'' + pImage + '\'}); event.stopPropagation();">Add to Cart</button>' +
+          btnHtml +
         '</div></div>';
     }).join('');
   }
